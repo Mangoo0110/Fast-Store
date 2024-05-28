@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:easypos/common/widgets/show_rect_image.dart';
 import 'package:easypos/data/datasources/firebase/firebase_image_repo_impl.dart';
+import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/models/category_list_model.dart';
 import 'package:easypos/models/product_model.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
@@ -199,7 +200,7 @@ class _SelectProductItemsWidgetState extends State<SelectProductItemsWidget> {
         Uint8List? thisProductImage = context.watch<StoreDataController>().idMappedImages[thisProduct.productImageId];
         return InkWell(
           onTap: () {
-            context.read<BillingDataController>().addBillingProduct(billId: widget.billId, product: thisProduct, addingUnit: 1, discountPercentage: 0);
+            context.read<BillingDataController>().addBillingProduct(billId: widget.billId, product: thisProduct, addingUnit: 1, discountPercentage: 0, billigMethod: BillingMethod.itemSelect);
           },
           
           child: Container(

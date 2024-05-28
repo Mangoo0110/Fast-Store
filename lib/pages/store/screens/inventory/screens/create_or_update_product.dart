@@ -12,10 +12,14 @@ import 'package:easypos/models/store_model.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/common/widgets/image_show_upload_widget.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/piece_kilo_switch_widget.dart';
+import 'package:easypos/pages/store/screens/inventory/widgets/product_buying_selling_price_widget.dart';
+import 'package:easypos/pages/store/screens/inventory/widgets/product_stock_add_subtract.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/select_categories_of_product.dart';
 import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_sizes.dart';
 import 'package:easypos/utils/app_textstyles.dart';
+import 'package:easypos/utils/dekhao.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -40,14 +44,17 @@ class CreateOrUpdateProduct extends StatefulWidget {
 }
 
 class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
+
+  late ProductModel editingProduct;
+
   TextEditingController productNameInputcontroller = TextEditingController();
   TextEditingController productDescriptionInputcontroller =
       TextEditingController();
-  TextEditingController productPriceInputcontroller = TextEditingController();
+  
   Uint8List? productImage;
   bool imageChanged = false;
 
-  // int
+  // double
   double productPrice = 0.0;
 
   //bool
@@ -58,7 +65,7 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
 
   //formKeys::
   final _productNameformKey = GlobalKey<FormState>();
-  final _productPriceformKey = GlobalKey<FormState>();
+  
 
   //sets ::
   Set<String> selectedCategorySet = {};
@@ -68,28 +75,26 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
 
   // functions
 
-  Future<void> _createProduct() async {
-    if (_productNameformKey.currentState!.validate() &&
-        _productPriceformKey.currentState!.validate() &&
-        mounted) {
-      final StoreModel currentStore =
+  _initiateEditingProduct() {
+    final StoreModel currentStore =
           context.read<StoreDataController>().currentStore!;
-
-      final productPrice =
-          double.tryParse(productPriceInputcontroller.text.trim()) ??
-              (widget.updatingProduct != null
-                  ? widget.updatingProduct!.productPrice
-                  : 0.0);
-
-      ProductModel newOrUpdateProduct = ProductModel(
+          
+    return ProductModel(
         productId: widget.updatingProduct != null
             ? widget.updatingProduct!.productId
             : FirebaseProductRepoImpl()
                 .getProductIdForNewProduct(storeId: currentStore.storeId),
-        itemBarcode: '',
+        itemBarcode: widget.updatingProduct != null
+            ? widget.updatingProduct!.itemBarcode 
+            : '',
         productName: productNameInputcontroller.text.trim(),
         productDescription: productDescriptionInputcontroller.text.trim(),
-        productPrice: productPrice,
+        productPrice: widget.updatingProduct != null
+            ? widget.updatingProduct!.productPrice
+            : 0,
+        productionCost: widget.updatingProduct != null
+            ? widget.updatingProduct!.productionCost
+            : 0,
         stockCount: widget.updatingProduct != null
             ? widget.updatingProduct!.stockCount
             : 0,
@@ -107,8 +112,17 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
                 widget.updatingProduct!.quantityMapFrequency == {})
             ? {1: 0}
             : widget.updatingProduct!.quantityMapFrequency,
-        ignoreStockOut: true
+        ignoreStockOut: false
       );
+  }
+
+  Future<void> _createProduct() async {
+    if (_productNameformKey.currentState!.validate() &&
+        mounted) {
+      final StoreModel currentStore = context.read<StoreDataController>().currentStore!;
+
+      ProductModel newOrUpdateProduct = editingProduct;
+
       if (imageChanged && productImage != null) {
         await FirebaseImageRepoImpl().uploadImage(
             imageBytes: productImage!, imageId: newOrUpdateProduct.productImageId);
@@ -119,11 +133,8 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
         }
         return;
       }
-      await FirebaseProductRepoImpl()
-          .createOrUpdateProduct(
-              newProduct: newOrUpdateProduct,
-              storeId: currentStore.storeId,
-              productImage: null)
+      await FirebaseProductRepoImpl().createOrUpdateProduct(
+              newProduct: newOrUpdateProduct, storeId: currentStore.storeId, productImage: null)
           .then((result) => result.fold((dataFailure) {
                 Fluttertoast.showToast(
                     msg: "Failed! \n ${dataFailure.message}");
@@ -153,8 +164,8 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
       kiloLitreProduct = widget.updatingProduct!.kiloLitreProduct;
     }
     productImage = widget.productImage;
-    productPriceInputcontroller.text = productPrice.toString();
     productNameInputcontroller.text = productName;
+    editingProduct = _initiateEditingProduct();
     super.initState();
   }
 
@@ -162,15 +173,16 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
   void dispose() {
     // TODO: implement dispose
     productDescriptionInputcontroller.dispose();
-    productPriceInputcontroller.dispose();
     productNameInputcontroller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    _initiateEditingProduct();
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Align(
               alignment: Alignment.topLeft,
@@ -218,92 +230,88 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  //mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ImageShowUploadWidget(
-                      heroTagForImage: widget.heroTagForImage,
-                      image: productImage,
-                      onUpload: (image) {
-                        productImage = image;
-                        imageChanged = true;
-                      },
-                    ),
-                    _selectShowCategoies(constraints: constraints),
-                    _kiloPieceSwitch(constraints: constraints),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 75,
-                      child: Form(
-                        key: _productNameformKey,
-                        child: NameTextfield(
-                          maxLines: 1,
-                          onChanged: (text) {
-                            if (mounted) {
-                              _productNameformKey.currentState!.validate();
-                            }
-                          },
-                          controller: productNameInputcontroller,
-                          hintText: '(Product name)',
-                          labelText: "Product name",
-                          validationCheck: (text) {
-                            if (selectedCategorySet.contains(text)) {
-                              return "Already exist";
-                            }
-                            if (text.isEmpty) {
-                              return "This field can not be empty";
-                            }
-                            return null;
-                          },
+                    
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: AppColors().grey()),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: const[
+                          BoxShadow(color: Color(0x1F000000), blurRadius: 5)
+                        ]
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 10),
+                        child: Column(
+                          children: [
+                            ImageShowUploadWidget(
+                              heroTagForImage: widget.heroTagForImage,
+                              image: productImage,
+                              onUpload: (image) {
+                                productImage = image;
+                                imageChanged = true;
+                              },
+                            ),
+                            SizedBox(
+                              height: 75,
+                              child: Form(
+                                key: _productNameformKey,
+                                child: NameTextfield(
+                                  maxLines: 1,
+                                  onChanged: (text) {
+                                    if (mounted) {
+                                      _productNameformKey.currentState!.validate();
+                                    }
+                                  },
+                                  controller: productNameInputcontroller,
+                                  hintText: '(Product name)',
+                                  labelText: "Product name",
+                                  validationCheck: (text) {
+                                    if (selectedCategorySet.contains(text)) {
+                                      return "Already exist";
+                                    }
+                                    if (text.isEmpty) {
+                                      return "This field can not be empty";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                     SizedBox(
                       height: AppSizes().verticalSpace2,
                     ),
-                    SizedBox(
-                      height: 75,
-                      child: Form(
-                        key: _productPriceformKey,
-                        child: NumTextfield(
-                          onTap: () {
-                            
-                          },
-                          maxLines: 1,
-                          onlyInteger: false,
-                          numRegExp: moneyRegExp(),
-                          onChanged: (text) {
-                            if (mounted) {
-                              _productPriceformKey.currentState!.validate();
-                            }
-                          },
-                          controller: productPriceInputcontroller,
-                          hintText: 'Price of the product per unit',
-                          labelText: "Product price",
-                          validationCheck: (text) {
-                            if (text.isEmpty) {
-                              return "This field can not be empty";
-                            }
-                            if (!integerRegExp().hasMatch(text)) {
-                              productPriceInputcontroller.text =
-                                  productPrice.toString();
-                              return "Not a valid price (e.g. 0.123, 10, 222, 25.8773) ";
-                            } else {
-                              double? price = double.tryParse(text);
-                              if (price != null) {
-                                productPrice = price;
-                              } else {
-                                productPriceInputcontroller.text =
-                                    productPrice.toString();
-                                return "Not a valid price (e.g. 0.123, 10, 222, 25.8773) ";
-                              }
-                            }
-                            return null;
-                          },
-                        ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: AppColors().grey()),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: const[
+                          BoxShadow(color: Color(0x1F000000), blurRadius: 5)
+                        ]
+                      ),
+                      child: Column(
+                        children: [
+                          _buyingSellingPrice(),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          _kiloPieceSwitchAndStock(constraints: constraints),
+                        ],
                       ),
                     ),
+                    
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    _selectShowCategoies(constraints: constraints),
+                    
                     const SizedBox(
                       height: 10,
                     ),
@@ -333,25 +341,48 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
     });
   }
 
+  Widget _buyingSellingPrice() {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4),
+        child: ProductBuyingSellingPrice(
+          product: editingProduct, 
+          afterEditProduct:(afterEditProduct) { 
+            editingProduct = afterEditProduct;
+          },),
+      ));
+  }
+
   Widget _deleteProduct({required BoxConstraints constraints}) {
-    return InkWell(
-      onTap: () async {
-        await FirebaseProductRepoImpl()
-            .deleteAProduct(
-                productId: widget.updatingProduct!.productId,
-                storeId:
-                    context.read<StoreDataController>().currentStore!.storeId)
-            .then((dataResult) {
-          dataResult.fold((failure) {
-            Fluttertoast.showToast(msg: 'Failed: ${failure.message}');
-          }, (success) {
-            Navigator.pop(context);
-          });
-        });
-      },
-      child: Container(
-          decoration: BoxDecoration(
-              color: Colors.black, borderRadius: BorderRadius.circular(8)),
+    dekhao('this delete button');
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.red.shade100),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: const[
+          BoxShadow(color: Color(0x1F000000), blurRadius: 8)
+        ]
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          splashColor: Colors.red.shade400,
+          onTap: () async {
+            await FirebaseProductRepoImpl()
+                .deleteAProduct(
+                    productId: widget.updatingProduct!.productId,
+                    storeId:
+                        context.read<StoreDataController>().currentStore!.storeId)
+                .then((dataResult) {
+              dataResult.fold((failure) {
+                Fluttertoast.showToast(msg: 'Failed: ${failure.message}');
+              }, (success) {
+                Navigator.pop(context);
+              });
+            });
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Row(
@@ -359,56 +390,65 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Text(
-                    'Delete this product',
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: AppSizes().normalText,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.bold),
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                    size: AppSizes().header,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                    size: AppSizes().extraBig,
+                  child: Text(
+                    'Delete this product',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: AppSizes().normalText,
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
-                )
+                ),
+                
               ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _kiloPieceSwitch({required BoxConstraints constraints}) {
-    return PieceKiloSwitchWidget(
-      kiloLitreProduct: kiloLitreProduct,
-      pieceProduct: pieceProduct,
-      pieceProductState: (state) {
-        pieceProduct = state;
-      },
-      kiloLitreProductState: (state) {
-        kiloLitreProduct = state;
-      },
+  Widget _kiloPieceSwitchAndStock({required BoxConstraints constraints}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        // border: Border.all(color: AppColors().grey()),
+        // borderRadius: BorderRadius.circular(8),
+        // boxShadow: const[
+        //   BoxShadow(color: Color(0x1F000000), blurRadius: 8)
+        // ]
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 4),
+        child: ProductStockAddSubtractWidget(
+          product: editingProduct, 
+          onStockChange:(afterEditProduct) { 
+            editingProduct = afterEditProduct;
+          }),
+      ),
     );
   }
 
   Widget _selectShowCategoies({required BoxConstraints constraints}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Container(
-        decoration: BoxDecoration(
-            color: AppColors().grey(), borderRadius: BorderRadius.circular(8)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: SelectShowCategoriesWidget(
-            selectedCategorySet: selectedCategorySet,
-            onSelect: (newSelectedCategorySet) {
-              selectedCategorySet = newSelectedCategorySet;
-            },
-          ),
+    return Container(
+      decoration: BoxDecoration(
+          color: AppColors().grey(), borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: SelectShowCategoriesWidget(
+          selectedCategorySet: selectedCategorySet,
+          onSelect: (newSelectedCategorySet) {
+            selectedCategorySet = newSelectedCategorySet;
+          },
         ),
       ),
     );

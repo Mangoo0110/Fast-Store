@@ -6,6 +6,7 @@ enum BillType {storeOrder, onlineOrder, inStore}
 
 class BillModel {
   final String billId;
+  final String localBillNo;
   BillType billType;
   String billerName;
   String billerId;
@@ -23,8 +24,9 @@ class BillModel {
   DateTime? deliveryDateTime;
   String deliveryAddress;
 
-  BillModel(
-      {required this.billId,
+  BillModel({
+      required this.billId,
+      required this.localBillNo,
       required this.billType,
       required this.billerName,
       required this.billerId,
@@ -47,6 +49,7 @@ class BillModel {
     Map<String, BillingProduct> idMappedbilledProducts = idMappedbilledProductsRaw.map((key, value) => MapEntry(key, BillingProduct.fromMap(map: value)));
     return BillModel(
         billId: map[kbillId] ?? 'no billId',
+        localBillNo: map[klocalBillNo] ?? '',
         billType: map[kbillType].toString() == BillType.inStore.name ?
          BillType.inStore
           : map[kbillType].toString() == BillType.storeOrder.name ? 
@@ -74,6 +77,7 @@ class BillModel {
     Map<String, Map<String, dynamic>> idMappedbilledProductsRaw = idMappedBilledProductList.map((key, value) => MapEntry(key, value.toMap()));
     return {
       kbillId: billId,
+      klocalBillNo: localBillNo,
       kbillType: billType.name,
       kbillerId: billerId,
       kbillerName: billerName,

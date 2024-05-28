@@ -3,18 +3,19 @@ import 'package:equatable/equatable.dart';
 
 class ProductModel extends Equatable {
   final String productId;
-  final String itemBarcode;
-  final String productName;
-  final String productDescription;
-  final List<String> productCategoryList;
-  final String productImageId;
-  final double productPrice;
-  final double stockCount;
-  final double soldFrequency;
-  final bool pieceProduct;
-  final bool kiloLitreProduct;
+  String itemBarcode;
+  String productName;
+  String productDescription;
+  List<String> productCategoryList;
+  String productImageId;
+  double productPrice;
+  double productionCost;
+  double stockCount;
+  double soldFrequency;
+  bool pieceProduct;
+  bool kiloLitreProduct;
   bool ignoreStockOut;
-  final Map<double, int> quantityMapFrequency;
+  Map<double, int> quantityMapFrequency;
 
   ProductModel(
       {required this.pieceProduct,
@@ -25,6 +26,7 @@ class ProductModel extends Equatable {
       required this.soldFrequency,
       required this.productName,
       required this.productPrice,
+      required this.productionCost,
       required this.stockCount,
       required this.productCategoryList,
       required this.productImageId,
@@ -41,6 +43,9 @@ class ProductModel extends Equatable {
             ? List<String>.from(map[kProductCategoryList])
             : [],
         productPrice: map[kProductPrice] == null
+            ? 0.0
+            : double.tryParse(map[kProductPrice].toString()) ?? 0.0,
+        productionCost: map[kProductionCost] == null
             ? 0.0
             : double.tryParse(map[kProductPrice].toString()) ?? 0.0,
         stockCount: map[kStockCount] == null

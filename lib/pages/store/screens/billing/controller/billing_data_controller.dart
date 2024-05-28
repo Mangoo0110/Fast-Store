@@ -39,6 +39,7 @@ class BillingDataController extends ChangeNotifier {
   newBill({required String storeId}){
     final bill = BillModel(
       billId: FirebaseStoreBillingRepoImpl().newBillId(storeId: storeId),
+      localBillNo: '',
       billType: BillType.inStore, 
       billerName: 'Owner', 
       billerId: '', 
@@ -62,7 +63,7 @@ class BillingDataController extends ChangeNotifier {
   }
 
 
-  addBillingProduct({required String billId, required ProductModel product, required double addingUnit, required double discountPercentage}) {
+  addBillingProduct({required String billId, required ProductModel product, required double addingUnit, required double discountPercentage, required BillingMethod billigMethod}) {
     if(_inStoreBillQueue.containsKey(billId)) {
 
       BillModel existingBill = _inStoreBillQueue[billId]!;
@@ -76,6 +77,7 @@ class BillingDataController extends ChangeNotifier {
       BillingProduct(
         productName: product.productName, 
         itemBarcode: '',
+        billingMethod: billigMethod,
         productImageId: product.productImageId,
         quantity: quantity, 
         totalPrice: max(0, (quantity * product.productPrice) * (1 - discountPercentage/100)),
@@ -93,7 +95,7 @@ class BillingDataController extends ChangeNotifier {
     }
   }
 
-  editSoldUnitOfProduct({required String billId, required double handTypedSoldUnit, required String productId}){
+  editSoldUnitOfProduct({required String billId, required double handTypedSoldUnit, required String productId, required BillingMethod billigMethod}){
     dekhao('handTypedSoldUnit $handTypedSoldUnit');
     if(_inStoreBillQueue.containsKey(billId)) {
       final bill = _inStoreBillQueue[billId]!;
@@ -110,6 +112,7 @@ class BillingDataController extends ChangeNotifier {
           BillingProduct(
             productId: productId,
             itemBarcode: '',
+            billingMethod: billigMethod,
             productImageId: beforeEditBP.productImageId,
             productName: beforeEditBP.productName, 
             productPrice: beforeEditBP.productPrice,

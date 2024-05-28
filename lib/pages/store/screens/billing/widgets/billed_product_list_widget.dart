@@ -71,7 +71,7 @@ class BilledProductListWidget extends StatelessWidget {
                                 billingProduct: billingProduct,
                                 onDone: (quantity) {
                                   dekhao("BillingProductEditPopup ${quantity.toString()}");
-                                  context.read<BillingDataController>().editSoldUnitOfProduct(billId: billId, handTypedSoldUnit: quantity, productId: billingProduct.productId);
+                                  context.read<BillingDataController>().editSoldUnitOfProduct(billId: billId, handTypedSoldUnit: quantity, productId: billingProduct.productId, billigMethod: BillingMethod.itemSelect);
                                   Navigator.pop(context);
                                 }));
                           },

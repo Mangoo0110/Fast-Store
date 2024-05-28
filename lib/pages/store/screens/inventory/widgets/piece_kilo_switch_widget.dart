@@ -100,7 +100,7 @@ class _PieceKiloSwitchWidgetState extends State<PieceKiloSwitchWidget> {
         ),
         Padding(
           padding: const EdgeInsets.all(4.0),
-          child: Text(label, style: AppTextStyle().normalSize(context: context),),
+          child: Text(label, style: AppTextStyle().smallSize(context: context),),
         ),
       ],
     );

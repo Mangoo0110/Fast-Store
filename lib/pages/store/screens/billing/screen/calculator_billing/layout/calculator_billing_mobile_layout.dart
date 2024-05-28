@@ -33,10 +33,10 @@ class _CalculatorBillingMobileLayoutState extends State<CalculatorBillingMobileL
               //mainAxisSize: MainAxisSize.max,
               children: [
                 
-                const Flexible(
+                Flexible(
                   child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CalculatorWidget(),
+                    padding: const EdgeInsets.all(8.0),
+                    child: CalculatorWidget(billId: widget.bill.billId,),
                   ),
                 ),
                 Container( 

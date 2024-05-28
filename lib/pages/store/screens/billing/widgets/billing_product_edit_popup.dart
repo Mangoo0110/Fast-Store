@@ -127,7 +127,7 @@ class _BillingProductEditPopupState extends State<BillingProductEditPopup> {
                                 onChanged: (value){
                                   dekhao("QuantityTextField $value");
                                   if(value == '' && double.tryParse(value)!.isNaN) {
-                                    context.read<BillingDataController>().editSoldUnitOfProduct(billId: widget.billId, handTypedSoldUnit: double.tryParse(value) ?? widget.billingProduct.quantity, productId: widget.billingProduct.productId);
+                                    context.read<BillingDataController>().editSoldUnitOfProduct(billId: widget.billId, handTypedSoldUnit: double.tryParse(value) ?? widget.billingProduct.quantity, productId: widget.billingProduct.productId, billigMethod: BillingMethod.itemSelect);
                                   }
                                   
                                 }, 
