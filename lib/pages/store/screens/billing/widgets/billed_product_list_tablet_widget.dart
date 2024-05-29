@@ -30,48 +30,6 @@ class BilledProductListTabletWidget extends StatelessWidget {
         return Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Container(
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(195, 15, 21, 40)
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('X', style: TextStyle(fontSize: AppSizes().big, color: AppColors().grey())),
-                    Text('In store', style: TextStyle(fontSize: AppSizes().big, color: AppColors().grey())),
-                    Row(
-                      children: [
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(8),
-                            splashColor: AppColors().appActionColor(context: context).withOpacity(.9),
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Icon(Icons.qr_code_scanner,  color: AppColors().grey(), size: 28,),))),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {},
-                              borderRadius: BorderRadius.circular(8),
-                              splashColor: AppColors().appActionColor(context: context).withOpacity(.9),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Icon(Icons.edit_square,  color: AppColors().grey(), size: 28,),
-                              ))),
-                        ),
-                      ],
-                    ),
-                    
-                  ],
-                ),
-              ),
-            ),
 
             Flexible(
               child: SizedBox(
@@ -104,8 +62,8 @@ class BilledProductListTabletWidget extends StatelessWidget {
                                   builder:(context) => BillingProductEditPopup(
                                     billId: billId,
                                     billingProduct: billingProduct,
-                                    onDone: (quantity) {
-                                      dekhao("BillingProductEditPopup ${quantity.toString()}");
+                                    onDone: (quantity, discountPercentage) {
+                                      context.read<BillingDataController>().productDiscount(billId: billId, discountPercentage: discountPercentage, productId: billingProduct.productId);
                                       context.read<BillingDataController>().editSoldUnitOfProduct(billId: billId, handTypedSoldUnit: quantity, productId: billingProduct.productId, billigMethod: BillingMethod.itemSelect);
                                       Navigator.pop(context);
                                     }));

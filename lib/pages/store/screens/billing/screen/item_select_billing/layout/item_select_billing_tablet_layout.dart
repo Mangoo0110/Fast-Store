@@ -2,6 +2,7 @@ import 'package:easypos/models/bill_model.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/billed_product_list_tablet_widget.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/select_product_items_widget.dart';
 import 'package:easypos/utils/app_colors.dart';
+import 'package:easypos/utils/app_sizes.dart';
 import 'package:easypos/utils/app_textstyles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -22,7 +23,9 @@ class _ItemSelectBillingTabletLayoutState extends State<ItemSelectBillingTabletL
         return SafeArea(
           child: Scaffold(
             appBar: AppBar(
-              title: Text('Select Items', style: AppTextStyle().boldNormalSize(context: context),),
+              iconTheme: const IconThemeData(color: Colors.white),
+              backgroundColor: Colors.green.shade400,
+              title: Text('Select Items', style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
               actions: _actionBarOptionList(),
             ),
             body: Row(
@@ -65,7 +68,7 @@ class _ItemSelectBillingTabletLayoutState extends State<ItemSelectBillingTabletL
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Icon(Icons.qr_code_scanner_sharp, color: Colors.black,),
+            child: Icon(Icons.qr_code_scanner_sharp, color: Colors.white,),
           )),
       ),
       Padding(
@@ -79,41 +82,11 @@ class _ItemSelectBillingTabletLayoutState extends State<ItemSelectBillingTabletL
             },
             child: const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.calculate, color: Colors.black,),
+              child: Icon(Icons.calculate, color: Colors.white,),
             )),
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.only(left: 2.0),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(color: Color(0x1F000000), blurRadius: 5)
-            ]
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () {
-                
-              },
-              child:  Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Icon(Icons.pause, color: Colors.black,),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2.0),
-                      child: Text('Hold', style: AppTextStyle().boldSmallSize(context: context),),
-                    )
-                  ],
-                ),
-              )),
-          ),
-        ),
-      ),
+      
     ];
   }
 }

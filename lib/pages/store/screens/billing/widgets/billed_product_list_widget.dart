@@ -69,8 +69,8 @@ class BilledProductListWidget extends StatelessWidget {
                               builder:(context) => BillingProductEditPopup(
                                 billId: billId,
                                 billingProduct: billingProduct,
-                                onDone: (quantity) {
-                                  dekhao("BillingProductEditPopup ${quantity.toString()}");
+                                onDone: (quantity, discountPercentage) {
+                                  context.read<BillingDataController>().productDiscount(billId: billId, discountPercentage: discountPercentage, productId: billingProduct.productId);
                                   context.read<BillingDataController>().editSoldUnitOfProduct(billId: billId, handTypedSoldUnit: quantity, productId: billingProduct.productId, billigMethod: BillingMethod.itemSelect);
                                   Navigator.pop(context);
                                 }));
@@ -118,17 +118,7 @@ class BilledProductListWidget extends StatelessWidget {
                 ),
               ],
             ),
-            Align(alignment: Alignment.topRight, child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text("${billingProduct.totalPrice.toString()} Tk", style: AppTextStyle().normalSize(context: context),),
-                const Padding(
-                  padding: EdgeInsets.only(left: 4.0),
-                  child: Icon(Icons.cancel, color: Colors.black,),
-                )
-              ],
-            ))
+            Align(alignment: Alignment.topRight, child: Text("${billingProduct.totalPrice.toString()} Tk", style: AppTextStyle().normalSize(context: context),))
           ]
         )
       ],

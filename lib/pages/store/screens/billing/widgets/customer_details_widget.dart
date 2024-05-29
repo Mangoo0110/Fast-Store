@@ -27,7 +27,6 @@ class _CustomerDetailsWidgetState extends State<CustomerDetailsWidget> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors().appActionColor(context: context).withAlpha(50),
         border: Border.all(
           color: Colors.black
         ),

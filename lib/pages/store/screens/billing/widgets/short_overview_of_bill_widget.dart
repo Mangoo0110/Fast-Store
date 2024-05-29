@@ -1,3 +1,4 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:easypos/common/widgets/show_round_image.dart';
 import 'package:easypos/models/bill_model.dart';
 import 'package:easypos/models/billing_product.dart';
@@ -43,13 +44,16 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flexible(child: _row1(constraints: constraints, context: context, )),
-              Flexible(child: _row2(constraints: constraints, context: context, thisBill: bill, billedProductList: billedProductList)),
+              //Flexible(child: _row1(constraints: constraints, context: context, )),
+              Flexible(child: _row2(thisBill: bill, billedProductList: billedProductList)),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 0.0),
+              //   child: _row3(constraints: constraints, context: context, thisBill: bill),
+              // ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0.0),
-                child: _row3(constraints: constraints, context: context, thisBill: bill),
-              ),
-              _row4(constraints: constraints, context: context, thisBill: bill)
+                padding: const EdgeInsets.only(top: 3.0),
+                child: _row4(thisBill: bill),
+              )
             ],
           ),
         );
@@ -57,91 +61,64 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
     );
   }
 
-  Widget _row1({required BoxConstraints constraints, required BuildContext context}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Flexible(
-          child: SizedBox(
-            width: constraints.maxWidth * .65,
-            height: 50,
-            child: const PaymentMethodWidget()),
-        ),
-        
-        CustomerDetailsWidget(
-          onEntry: (customerName, customerContactNo) {
-            
-          }, 
-          customerName: '', 
-          customerContactNo: '')
-      ],
-    );
-  }
-
-  Widget _row2({required BoxConstraints constraints, required BuildContext context, required BillModel thisBill, required List<BillingProduct> billedProductList}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          child: SizedBox(
-            width: constraints.maxWidth * .35,
-            child: _payableAmount(constraints: constraints, context: context, thisBill: thisBill)),
-        ),
-        Flexible(
-          child: SizedBox(
-            height: 50,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(4),
-                onTap: () {
-                  Navigator.push(context, SmoothPageTransition().createRoute(secondScreen: BilledProductListWidget(billId: billModel.billId)));
-                },
-                child: _productStack(constraints: constraints, context: context, billedProductList: billedProductList)),
-            ),
-          )),
-      ],
-    );
-  }
-
-  Widget _row3({required BoxConstraints constraints, required BuildContext context, required BillModel thisBill}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _recievedAmount(constraints: constraints, context: context, thisBill: thisBill),
-        _dueChange(constraints: constraints, context: context, thisBill: thisBill),
-      ],
-    );
-  }
-
-  Widget _row4({required BoxConstraints constraints, required BuildContext context, required BillModel thisBill}) {
-    return Table(
-      columnWidths: const{0: FlexColumnWidth(.5), 1: FlexColumnWidth(.5), },
-      children: [
-        TableRow(
+  Widget _row2({required BillModel thisBill, required List<BillingProduct> billedProductList}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // SizedBox(
-            //   height: 56,
-            //   child: Padding(
-            //     padding: const EdgeInsets.only(left: 2.0),
-            //     child: _detailsButton(constraints: constraints, context: context, bill: thisBill),
-            //   )),
-            SizedBox(
-              height: 56,
+            Flexible(
+              child: SizedBox(
+                height: 50,
+                width: constraints.maxWidth,
+                child: _orderTicketButton(constraints: constraints, context: context, bill: thisBill))
+            ),
+            Flexible(
               child: Padding(
                 padding: const EdgeInsets.only(left: 2.0),
-                child: _orderTicketButton(constraints: constraints, context: context, bill: thisBill),
-              )),
-            SizedBox(
-              height: 56,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                child: _saveButton(constraints: constraints, context: context, payableAmount: thisBill.payableAmount),
+                child: SizedBox(
+                  height: 50,
+                  width: constraints.maxWidth,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(4),
+                      onTap: () {
+                        Navigator.push(context, SmoothPageTransition().createRoute(secondScreen: BilledProductListWidget(billId: billModel.billId)));
+                      },
+                      child: _productStack(constraints: constraints, context: context, billedProductList: billedProductList)),
+                  ),
+                ),
               )),
           ],
-        )
-      ],
+        );
+      }
+    );
+  }
+
+
+  Widget _row4({required BillModel thisBill}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Row(
+          children: [
+            Flexible(
+              child: SizedBox(
+                height: 56,
+                width: constraints.maxWidth,
+                child: _holdButton()),
+            ),
+            Flexible(
+              child: SizedBox(
+                height: 56,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                  child: _saveButton(constraints: constraints, context: context, payableAmount: thisBill.payableAmount),
+                )),
+            ),
+          ],
+        );
+      }
     );
   }
 
@@ -160,8 +137,8 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
                 color: AppColors().grey(),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Text('+ ${billedProductList.length + 1 - cnt} more', style: const TextStyle(fontSize: 8, color: Colors.white),),
+                padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 6),
+                child: Text('+ ${billedProductList.length + 1 - cnt} more', style: const TextStyle(fontSize: 8, color: Colors.black),),
               ),
             ),
           );
@@ -176,49 +153,6 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
             height: 40, width: 40, borderRadius: 5000000,),
         );
       }).toList()
-    );
-  }
-
-  Widget _recievedAmount({required BoxConstraints constraints, required BuildContext context, required BillModel thisBill}) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2),
-            child: Row(
-              children: [
-                Text("Amt. received: ", style: AppTextStyle().boldSmallSize(context: context),),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(8)
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10),
-                    child: Text(
-                      thisBill.totalAmountReceived <= 0 ? thisBill.payableAmount.toString() : thisBill.totalAmountReceived.toString(),
-                      style: AppTextStyle().normalSize(context: context),),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _dueChange({required BoxConstraints constraints, required BuildContext context, required BillModel thisBill}) {
-    final double dueAmount = thisBill.payableAmount - thisBill.totalAmountReceived ;
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Text( '${(dueAmount > 0) ? 'Due' : 'Change'}: ${dueAmount.abs()}', style: AppTextStyle().boldSmallSize(context: context),),
     );
   }
 
@@ -241,8 +175,30 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           onTap: () {},
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(child: Text("SAVE (${payableAmount.toString()})", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    const Text("Payable: ", style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.normal),),
+                    Text("${payableAmount.toString()} Tk.", style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.normal),),
+                  ],
+                ),
+                
+                Padding(
+                  padding: const EdgeInsets.only(top: 0.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Proceed", style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
+                      const Icon(Icons.arrow_forward, color: Colors.white, size: 20,)
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -262,7 +218,7 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           onTap: () {},
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 4),
+            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -278,27 +234,43 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
       ),
     );
   }
-
-  Widget _detailsButton({required BoxConstraints constraints, required BuildContext context, required BillModel bill}) {
-    return Container(
-      height: constraints.maxHeight,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black)
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 4),
-            child: Center(child: Text("DETAILS", style: AppTextStyle().boldNormalSize(context: context),)),
+  
+  Widget _holdButton(){
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.green),
+            color: Colors.white,
+            boxShadow: const [
+              BoxShadow(color: Color(0x1F000000), blurRadius: 5)
+            ]
           ),
-        ),
-      ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () {
+                
+              },
+              child:  Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.pause, color: Colors.green,),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 2.0),
+                      child: Text('Hold', style: TextStyle(color: Colors.green, fontSize: AppSizes().small, fontWeight: FontWeight.bold),),
+                    )
+                  ],
+                ),
+              )),
+          ),
+        );
+      },
     );
   }
-  
 
 }
