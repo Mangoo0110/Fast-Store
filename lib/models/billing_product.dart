@@ -1,5 +1,5 @@
 import 'package:easypos/data/data_field_names/data_field_names.dart';
-enum BillingMethod {calculator, itemSelect}
+enum BillingMethod {calculator, itemSelect, scan}
 class BillingProduct {
   final String productId;
   final String itemBarcode;

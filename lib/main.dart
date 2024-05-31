@@ -77,6 +77,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        iconTheme: const IconThemeData(color: Colors.white),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         fontFamily: 'Roboto',
         useMaterial3: true,

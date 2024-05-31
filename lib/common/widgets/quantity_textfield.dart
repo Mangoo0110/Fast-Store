@@ -59,7 +59,7 @@ class _QuantityTextFieldState extends State<QuantityTextField> {
           constraints: BoxConstraints(minHeight: constraints.maxHeight),
           hintText: widget.hintText,
           label: Text(widget.labelText),
-          labelStyle: AppTextStyle().bigSize(context: context),
+          labelStyle: AppTextStyle().boldNormalSize(context: context),
           hintStyle: const TextStyle(color: Colors.grey),
           border: const OutlineInputBorder(
             borderSide: BorderSide(

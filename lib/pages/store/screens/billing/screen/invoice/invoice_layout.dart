@@ -6,6 +6,10 @@ import 'package:easypos/models/bill_model.dart';
 import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
+import 'package:easypos/pages/store/screens/billing/widgets/billed_product_list_widget.dart';
+import 'package:easypos/pages/store/screens/billing/widgets/invoice_sections_widget.dart';
+import 'package:easypos/utils/app_colors.dart';
+import 'package:easypos/utils/app_sizes.dart';
 import 'package:easypos/utils/app_textstyles.dart';
 import 'package:easypos/utils/dekhao.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,6 +28,9 @@ class InvoiceLayout extends StatefulWidget {
 
 class _InvoiceLayoutState extends State<InvoiceLayout> {
 
+  final List<String> sectionNameList = ['Customer Info', 'Payable Info', 'Billed Products'];
+  final List<GlobalKey> sectionKeyList = [GlobalKey(), GlobalKey(), GlobalKey()];
+
   TextEditingController customerNameController = TextEditingController();
 
   TextEditingController customerContactNoController = TextEditingController();
@@ -31,6 +38,13 @@ class _InvoiceLayoutState extends State<InvoiceLayout> {
   TextEditingController receivedMoneyController = TextEditingController();
 
   double receivedMoney = 0;
+
+  void scrollToSection({required GlobalKey key}) {
+    Scrollable.ensureVisible(
+      key.currentContext!,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCirc);
+  }
 
   @override
   void initState() {
@@ -48,6 +62,7 @@ class _InvoiceLayoutState extends State<InvoiceLayout> {
     
     super.initState();
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -71,27 +86,56 @@ class _InvoiceLayoutState extends State<InvoiceLayout> {
           ),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(child: _customerDetails(constraints: constraints)),
-                  
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: _money(constraints: constraints, bill: bill),
+            child: Column(
+              //mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 40,
+                  width: constraints.maxWidth,
+                  child: InvoiceSectionWidget(
+                    sectionNameList: sectionNameList, 
+                    onTap:(selectedSectionIndex) {
+                      scrollToSection(key: sectionKeyList[selectedSectionIndex]);
+                    }, 
+                    initialIndex: 0
+                  ),
+                ),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Container(
+                            key: sectionKeyList[0], 
+                            child: _customerDetails(constraints: constraints))),
+                        
+                        Flexible(
+                          child: Container(
+                            key: sectionKeyList[1],
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: _money(constraints: constraints, bill: bill),
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          child: Container(
+                            key: sectionKeyList[2], 
+                            child: _billedProductList(constraints: constraints) 
+                          ),
+                        ),
+                        // Flexible(
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.only(top: 4.0),
+                        //     child: _saveEditButtons(constraints: constraints),
+                        //   ),
+                        // ),
+                      ],
                     ),
                   ),
-                  _billedProductList(constraints: constraints),
-                  // Flexible(
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.only(top: 4.0),
-                  //     child: _saveEditButtons(constraints: constraints),
-                  //   ),
-                  // ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -136,57 +180,11 @@ class _InvoiceLayoutState extends State<InvoiceLayout> {
   }
 
   Widget _billedProductList({required BoxConstraints constraints}) {
-    return Flexible(
-      child: SizedBox(
-        //height: 150,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: (widget.bill.idMappedBilledProductList.isEmpty) ? 
-          const Center(child: Text('No products selected!'))
-          :
-          Column(
-            children: widget.bill.idMappedBilledProductList.entries.map((saleProduct){
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Container(
-                  height: 80,
-                  width: constraints.maxWidth,
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade300,
-                    borderRadius: BorderRadius.circular(8)
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: _table(context: context, constraints: constraints, billingProduct: saleProduct.value),
-                  ),
-                ),
-              );
-            }).toList()
-          ),
-        ),
-      ),
-    );
-  }
-  Widget _table({required BuildContext context, required BoxConstraints constraints, required BillingProduct billingProduct,}) {
-    return Table(
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      columnWidths: const{0: FlexColumnWidth(.48), 1: FlexColumnWidth(.28), 2: FlexColumnWidth(.23),},
-      children: [
-        TableRow(
-          children: [
-            Row(
-              children: [
-                ShowRoundImage(image: context.read<StoreDataController>().imageIfExist(imageId: billingProduct.productImageId), height: 60, width: 60, borderRadius: 5000000,),
-                Flexible(
-                  child: Text(billingProduct.productName, style: AppTextStyle().normalSize(context: context),),
-                ),
-              ],
-            ),
-            Align(alignment: Alignment.center, child: Text("Qty. ${billingProduct.quantity}", style: AppTextStyle().normalSize(context: context),)),
-            Align(alignment: Alignment.center, child: Text("${billingProduct.totalPrice.toString()} Tk", style: AppTextStyle().normalSize(context: context),))
-          ]
-        )
-      ],
+    return SizedBox(
+      //height: 150,
+      child: BilledProductListWidget(
+        billedProductList: context.read<BillingDataController>().inStoreBillQueue[widget.bill.billId]!.idMappedBilledProductList.entries.map((e) => e.value).toList(), 
+        billId: widget.bill.billId,)
     );
   }
 

@@ -27,7 +27,7 @@ class _CalculatorBillingTabletLayoutState extends State<CalculatorBillingTabletL
           child: Scaffold(
             appBar: AppBar(
               iconTheme: const IconThemeData(color: Colors.white),
-              backgroundColor: Colors.green.shade400,
+              backgroundColor: AppColors().appActionColor(context: context),
               title: Text('Select Items', style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
               actions: _actionBarOptionList(),
             ),

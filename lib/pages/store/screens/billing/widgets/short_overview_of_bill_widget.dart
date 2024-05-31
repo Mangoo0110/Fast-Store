@@ -4,6 +4,7 @@ import 'package:easypos/models/bill_model.dart';
 import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
+import 'package:easypos/pages/store/screens/billing/screen/invoice/invoice_layout.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/billed_product_list_widget.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/customer_details_widget.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/payment_method_choose_widget.dart';
@@ -18,21 +19,21 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class ShortOverviewOfBillWidget extends StatelessWidget {
-  final BillModel billModel;
-  const ShortOverviewOfBillWidget({super.key, required this.billModel});
+  final String billId;
+  const ShortOverviewOfBillWidget({super.key, required this.billId});
 
   @override
   Widget build(BuildContext context) {
-    final BillModel bill = context.watch<BillingDataController>().inStoreBillQueue[billModel.billId]!;
+    final BillModel thisBill = context.watch<BillingDataController>().inStoreBillQueue[billId]!;
 
-    final List<BillingProduct> billedProductList = bill.idMappedBilledProductList.entries.map((mapEntry) {
+    final List<BillingProduct> billedProductList = thisBill.idMappedBilledProductList.entries.map((mapEntry) {
       return mapEntry.value;
     }).toList();
 
     billedProductList.sort((a,b)=> -(a.totalPrice.compareTo(b.totalPrice)));
 
     double totalTax = 0;
-    bill.taxNameMapPercentage.forEach((key, value) {
+    thisBill.taxNameMapPercentage.forEach((key, value) {
       totalTax += value;
     });
 
@@ -45,14 +46,14 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //Flexible(child: _row1(constraints: constraints, context: context, )),
-              Flexible(child: _row2(thisBill: bill, billedProductList: billedProductList)),
+              Flexible(child: _row2(thisBill: thisBill, billedProductList: billedProductList)),
               // Padding(
               //   padding: const EdgeInsets.symmetric(vertical: 0.0),
               //   child: _row3(constraints: constraints, context: context, thisBill: bill),
               // ),
               Padding(
                 padding: const EdgeInsets.only(top: 3.0),
-                child: _row4(thisBill: bill),
+                child: _row4(thisBill: thisBill),
               )
             ],
           ),
@@ -84,7 +85,7 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(4),
                       onTap: () {
-                        Navigator.push(context, SmoothPageTransition().createRoute(secondScreen: BilledProductListWidget(billId: billModel.billId)));
+                        //Navigator.push(context, SmoothPageTransition().createRoute(secondScreen: BilledProductListWidget(billId: billId)));
                       },
                       child: _productStack(constraints: constraints, context: context, billedProductList: billedProductList)),
                   ),
@@ -113,7 +114,7 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
                 height: 56,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: _saveButton(constraints: constraints, context: context, payableAmount: thisBill.payableAmount),
+                  child: _saveButton(thisBill: thisBill),
                 )),
             ),
           ],
@@ -163,45 +164,54 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
     );
   }
 
-  Widget _saveButton({required BoxConstraints constraints, required BuildContext context, required double payableAmount}) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.green
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
+  Widget _saveButton({required BillModel thisBill}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.green
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () {
+                if(thisBill.subTotal <= 0) {
+                  return;
+                } 
+                Navigator.push(context, SmoothPageTransition().createRoute(secondScreen: InvoiceLayout(bill: thisBill)));
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Payable: ", style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.normal),),
-                    Text("${payableAmount.toString()} Tk.", style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.normal),),
+                    Row(
+                      children: [
+                        const Text("Payable: ", style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.normal),),
+                        Text("${thisBill.payableAmount.toString()} Tk.", style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.normal),),
+                      ],
+                    ),
+                    
+                    Padding(
+                      padding: const EdgeInsets.only(top: 0.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Proceed", style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
+                          const Icon(Icons.arrow_forward, color: Colors.white, size: 20,)
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-                
-                Padding(
-                  padding: const EdgeInsets.only(top: 0.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Proceed", style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
-                      const Icon(Icons.arrow_forward, color: Colors.white, size: 20,)
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }
     );
   }
 
@@ -262,7 +272,7 @@ class ShortOverviewOfBillWidget extends StatelessWidget {
                     const Icon(Icons.pause, color: Colors.green,),
                     Padding(
                       padding: const EdgeInsets.only(left: 2.0),
-                      child: Text('Hold', style: TextStyle(color: Colors.green, fontSize: AppSizes().small, fontWeight: FontWeight.bold),),
+                      child: Text('Hold', style: TextStyle(color: Colors.green, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
                     )
                   ],
                 ),

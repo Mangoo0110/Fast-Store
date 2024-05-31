@@ -20,6 +20,18 @@ class AppTextStyle {
     return TextStyle(color: AppColors().appActionColor(context: context), overflow: TextOverflow.ellipsis, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold);
   }
 
+  TextStyle buttonTextStyleNormal({
+    required BuildContext context
+  }) {
+    return TextStyle(color: Colors.white, overflow: TextOverflow.ellipsis, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold);
+  }
+
+  TextStyle appBarTextStyle({
+    required BuildContext context
+  }) {
+    return TextStyle(color: Colors.white, overflow: TextOverflow.ellipsis, fontSize: AppSizes().big, fontWeight: FontWeight.bold);
+  }
+
   TextStyle actionBoldSmallSize({
     required BuildContext context
   }) {

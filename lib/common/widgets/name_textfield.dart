@@ -36,7 +36,7 @@ class NameTextfield extends StatelessWidget {
           constraints: BoxConstraints(minHeight: constraints.maxHeight),
           hintText: hintText,
           label: Text(labelText),
-          labelStyle: AppTextStyle().bigSize(context: context),
+          labelStyle: AppTextStyle().normalSize(context: context),
           hintStyle: const TextStyle(color: Colors.grey),
           border: const UnderlineInputBorder(),
           focusedBorder: const UnderlineInputBorder(

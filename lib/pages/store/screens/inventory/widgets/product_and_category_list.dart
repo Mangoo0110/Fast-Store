@@ -132,62 +132,65 @@ class _CategoryAndProductListState extends State<CategoryAndProductList> {
         Uint8List? thisProductImage = context.watch<StoreDataController>().idMappedImages[thisProduct.productImageId];
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 2),
-          child: InkWell(
-            onTap: () {
-              
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateOrUpdateProduct(
-                productImage: thisProductImage,
-                heroTagForImage: thisProduct.productId,
-                updatingProduct: thisProduct,
-                onCreateDone: () {
-                  Navigator.pop(context);
+          child: Container(
+            height: 100,
+            width: constraints.maxWidth,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: index % 2 == 0 ? Colors.white : Colors.grey.shade200,
+              // border: Border.all(color: AppColors().grey()),
+              // //border: Border.all(color: Colors.grey),
+              // boxShadow: const [
+              //   BoxShadow(color: Color(0x1F000000), blurRadius: 5)
+              // ]
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(4),
+                onTap: () {
+                  
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateOrUpdateProduct(
+                    productImage: thisProductImage,
+                    heroTagForImage: thisProduct.productId,
+                    updatingProduct: thisProduct,
+                    onCreateDone: () {
+                      Navigator.pop(context);
+                    },
+                  )));
+                  
                 },
-              )));
-              
-            },
-            onLongPress: () {
-            },
-            child: Container(
-              height: 100,
-              width: constraints.maxWidth,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
-                border: Border.all(color: AppColors().grey()),
-                //border: Border.all(color: Colors.grey),
-                boxShadow: const [
-                  BoxShadow(color: Color(0x1F000000), blurRadius: 5)
-                ]
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          thisProduct.productName, 
-                          style: AppTextStyle().normalSize(context: context)
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Text(
-                            "(${thisProduct.productPrice} Tk)", 
-                            style: AppTextStyle().actionBoldNormalSize(context: context)
+                onLongPress: () {
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            thisProduct.productName, 
+                            style: AppTextStyle().normalSize(context: context)
                           ),
-                        ),
-                    
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              "(${thisProduct.productPrice} Tk)", 
+                              style: TextStyle(color: Colors.orange.shade500, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold)
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const  EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    child: ShowRectImage(image: thisProductImage, height: 90, width: 90, borderRadius: 8,)
-                  )
-                ],
+                    Padding(
+                      padding: const  EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      child: ShowRectImage(image: thisProductImage, height: 90, width: 90, borderRadius: 8,)
+                    )
+                  ],
+                ),
               ),
             ),
           ),

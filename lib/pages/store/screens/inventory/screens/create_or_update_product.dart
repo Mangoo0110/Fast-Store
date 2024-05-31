@@ -11,6 +11,7 @@ import 'package:easypos/models/product_model.dart';
 import 'package:easypos/models/store_model.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/common/widgets/image_show_upload_widget.dart';
+import 'package:easypos/pages/store/screens/inventory/widgets/barcode_show_edit_widget.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/piece_kilo_switch_widget.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/product_buying_selling_price_widget.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/product_stock_add_subtract.dart';
@@ -61,7 +62,7 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
   bool kiloLitreProduct = true, pieceProduct = false;
 
   //string
-  String productName = '';
+  String productName = '', productBarcode = '';
 
   //formKeys::
   final _productNameformKey = GlobalKey<FormState>();
@@ -74,7 +75,6 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
   List<String> storeCategoryList = [];
 
   // functions
-
   _initiateEditingProduct() {
     final StoreModel currentStore =
           context.read<StoreDataController>().currentStore!;
@@ -98,8 +98,9 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
         stockCount: widget.updatingProduct != null
             ? widget.updatingProduct!.stockCount
             : 0,
-        productCategoryList:
-            selectedCategorySet.map((category) => category).toList(),
+        productCategoryList: widget.updatingProduct != null
+            ? widget.updatingProduct!.productCategoryList
+            : [],
         productImageId: widget.updatingProduct != null
             ? widget.updatingProduct!.productImageId
             : FirebaseImageRepoImpl().newImageId(),
@@ -159,6 +160,7 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
           (widget.updatingProduct!.productCategoryList.toSet());
       selectedCategorySet.remove('All Products');
       productName = widget.updatingProduct!.productName;
+      productBarcode = widget.updatingProduct!.itemBarcode;
       productPrice = widget.updatingProduct!.productPrice;
       pieceProduct = widget.updatingProduct!.pieceProduct;
       kiloLitreProduct = widget.updatingProduct!.kiloLitreProduct;
@@ -182,15 +184,17 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
     _initiateEditingProduct();
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white.withOpacity(.99),
         appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+          backgroundColor: AppColors().appActionColor(context: context),
           title: Align(
               alignment: Alignment.topLeft,
               child: Text(
                 widget.updatingProduct != null
                     ? "Update Product "
                     : "New Product",
-                style: AppTextStyle().boldBigSize(context: context),
+                style: AppTextStyle().appBarTextStyle(context: context),
               )),
           actions: [
             InkWell(
@@ -215,7 +219,7 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   widget.updatingProduct == null ? 'Create' : 'Update',
-                  style: AppTextStyle().actionBoldNormalSize(context: context),
+                  style: AppTextStyle().buttonTextStyleNormal(context: context),
                 ),
               ),
             ),
@@ -232,7 +236,6 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -280,49 +283,89 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
                                 ),
                               ),
                             ),
+                            ProductBuyingSellingPrice(
+                              product: editingProduct, 
+                              afterEditProduct:(afterEditProduct) { 
+                                editingProduct = afterEditProduct;
+                              },
+                            ),
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: AppSizes().verticalSpace2,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: AppColors().grey()),
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: const[
-                          BoxShadow(color: Color(0x1F000000), blurRadius: 5)
-                        ]
-                      ),
-                      child: Column(
-                        children: [
-                          _buyingSellingPrice(),
-                          const SizedBox(
-                            height: 10,
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: AppColors().grey()),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const[
+                              BoxShadow(color: Color(0x1F000000), blurRadius: 5)
+                            ]
                           ),
-                          _kiloPieceSwitchAndStock(constraints: constraints),
-                        ],
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: SizedBox(
+                                    height: 65,
+                                    width: constraints.maxWidth,
+                                    child: BarcodeShowEditWidget(
+                                      barcodeText: productBarcode, 
+                                      onBarcodeChange:(newBarcodeText) {
+                                        productBarcode = newBarcodeText;
+                                        editingProduct.itemBarcode = newBarcodeText;
+                                      },),
+                                  ),
+                                ),
+                                
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                ProductStockAddSubtractWidget(
+                                  product: editingProduct, 
+                                  onStockChange:(afterEditProduct) { 
+                                    editingProduct = afterEditProduct;
+                                  }
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: AppColors().grey(), borderRadius: BorderRadius.circular(8)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: SelectShowCategoriesWidget(
+                            selectedCategorySet: selectedCategorySet,
+                            onSelect: (newSelectedCategorySet) {
+                              selectedCategorySet = newSelectedCategorySet;
+                            },
+                          ),
+                        ),
                       ),
                     ),
                     
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    _selectShowCategoies(constraints: constraints),
-                    
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 200,
-                      child: DescriptionTextfield(
-                        maxLines: 100,
-                        onChanged: (text) {},
-                        controller: productDescriptionInputcontroller,
-                        hintText: 'Write something about the product',
-                        labelText: "Description",
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: SizedBox(
+                        height: 200,
+                        child: DescriptionTextfield(
+                          maxLines: 100,
+                          onChanged: (text) {},
+                          controller: productDescriptionInputcontroller,
+                          hintText: 'Write something about the product',
+                          labelText: "Description",
+                        ),
                       ),
                     ),
                   ],
@@ -339,18 +382,6 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
         ),
       );
     });
-  }
-
-  Widget _buyingSellingPrice() {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4),
-        child: ProductBuyingSellingPrice(
-          product: editingProduct, 
-          afterEditProduct:(afterEditProduct) { 
-            editingProduct = afterEditProduct;
-          },),
-      ));
   }
 
   Widget _deleteProduct({required BoxConstraints constraints}) {
@@ -417,40 +448,4 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
     );
   }
 
-  Widget _kiloPieceSwitchAndStock({required BoxConstraints constraints}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        // border: Border.all(color: AppColors().grey()),
-        // borderRadius: BorderRadius.circular(8),
-        // boxShadow: const[
-        //   BoxShadow(color: Color(0x1F000000), blurRadius: 8)
-        // ]
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 4),
-        child: ProductStockAddSubtractWidget(
-          product: editingProduct, 
-          onStockChange:(afterEditProduct) { 
-            editingProduct = afterEditProduct;
-          }),
-      ),
-    );
-  }
-
-  Widget _selectShowCategoies({required BoxConstraints constraints}) {
-    return Container(
-      decoration: BoxDecoration(
-          color: AppColors().grey(), borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: SelectShowCategoriesWidget(
-          selectedCategorySet: selectedCategorySet,
-          onSelect: (newSelectedCategorySet) {
-            selectedCategorySet = newSelectedCategorySet;
-          },
-        ),
-      ),
-    );
-  }
 }

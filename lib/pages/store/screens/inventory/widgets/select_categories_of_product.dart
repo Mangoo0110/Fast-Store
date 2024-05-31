@@ -26,9 +26,9 @@ class _SelectShowCategoriesWidgetState extends State<SelectShowCategoriesWidget>
   //functions 
 
   _populateStoreCategoryList() {
-    final Map<String, String> categoryMapOfStore = context.read<StoreDataController>().categoryMapImageIdOfStore;;
+    final Map<String, String> categoryMapOfStore = context.read<StoreDataController>().categoryMapImageIdOfStore;
     categoryMapOfStore.forEach((key, value) { 
-      if(key != 'All') {
+      if(key != 'All products') {
         storeCategoryList.add(key);
         dekhao(key);
       }

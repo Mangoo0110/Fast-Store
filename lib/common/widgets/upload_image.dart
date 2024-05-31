@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:easypos/utils/app_colors.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:easypos/utils/app_textstyles.dart';
@@ -57,13 +58,13 @@ class _UploadImageState extends State<UploadImage> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(4.0),
-                  child: Icon(Icons.file_copy),
+                  child: Icon(Icons.file_copy, color: AppColors().appActionColor(context: context),),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(4.0),
-                  child: Text('Browse files', style: AppTextStyle().actionBoldNormalSize(context: context),),
+                  child: Text('Browse files', style: AppTextStyle().boldNormalSize(context: context),),
                 ),
               ],
             ),

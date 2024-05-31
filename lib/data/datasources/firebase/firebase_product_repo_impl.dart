@@ -101,5 +101,38 @@ class FirebaseProductRepoImpl extends RemoteProductRepo {
       return Left(DataCRUDFailure(failure: Failure.unknownFailure, message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<DataCRUDFailure, ProductModel>> fetchAProductViaBarcode({required String productBarcode, required String storeId}) async{
+    try {
+      String userId = FirebaseAuthRepoImpl().currentUser!.uid;
+      final firestoreAnswer = await _userCollection
+      .doc(userId).collection(kfirestoreStoreCollection)
+      .doc(storeId).collection(kFirestoreStoreProductCollection).where(kItemBarcode, isEqualTo: productBarcode).get();
+      
+      ProductModel? barcodeProduct;
+      firestoreAnswer.docs
+            .map((qsnap) {
+              // dekhao(qsnap.data().toString());
+              ProductModel product = ProductModel.fromMap(map: qsnap.data());
+              // dekhao(product.toMap());
+              barcodeProduct = product;
+              return;
+            });
+      if(barcodeProduct != null) {
+        return Right(barcodeProduct!);
+      } else {
+        return Left(DataCRUDFailure(failure: Failure.noData, message: "Product does not exist!"));
+      }
+    } on SocketException {
+      return Left(DataCRUDFailure(failure: Failure.socketFailure, message: 'Internet connection failed!'));
+    } on FirebaseAuthException catch(e){
+      return Left(DataCRUDFailure(failure: Failure.authFailure, message: e.code));
+    } catch (e) {
+      dekhao("remote error");
+      dekhao(e.toString());
+      return Left(DataCRUDFailure(failure: Failure.unknownFailure, message: e.toString()));
+    }
+  }
 
 }

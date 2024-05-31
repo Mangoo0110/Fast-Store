@@ -13,12 +13,12 @@ class AppColors {
   Color appActionColor ({
     required BuildContext context
   }) {
-    return  Colors.orange.shade800;
+    return  Colors.orange.shade400;
   }
   Color appAccentColor ({
     required BuildContext context
   }) {
-    return Colors.blueAccent.shade100;
+    return Colors.orange.shade200;
   }
 
   Color appInfoContainerColor(){

@@ -16,76 +16,69 @@ import 'package:provider/provider.dart';
 
 class BilledProductListWidget extends StatelessWidget {
   final String billId;
-  const BilledProductListWidget({super.key, required this.billId});
-
-
+  final List<BillingProduct>  billedProductList;
+  const BilledProductListWidget({super.key, required this.billedProductList, required this.billId,});
 
   @override
   Widget build(BuildContext context) {
-    final BillModel bill = context.watch<BillingDataController>().inStoreBillQueue[billId]!;
-    final List<BillingProduct>  billedProductList = bill.idMappedBilledProductList.entries.map((billingProduct) {
-      return billingProduct.value;
-    }).toList();
+    
     return LayoutBuilder(
       builder: (context, constraints) {
-        return SafeArea(
-          child: Scaffold(
-            appBar: AppBar(
-              title: Row(
-                children: [
-                  Text('Subtotal: ', style: AppTextStyle().smallSize(context: context),),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text("${bill.subTotal.toString()} Tk", style: AppTextStyle().boldXtraBigSize(context: context),),
-                  )
-                ],
+        List<Widget> widgetList = [];
+        for(int index = 0; index < billedProductList.length; index++) {
+          widgetList.add(Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Container(
+              height: 80,
+              width: constraints.maxWidth,
+              decoration: BoxDecoration(
+                color: index % 2 == 0 ? AppColors().grey().withOpacity(.5) : Colors.transparent,
+                borderRadius: BorderRadius.circular(8)
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context, 
+                      builder:(context) => BillingProductEditPopup(
+                        billId: billId,
+                        billingProduct: billedProductList[index],
+                        onDone: (quantity, discountPercentage) {
+
+                          context.read<BillingDataController>()
+                          .productDiscount(
+                            billId: billId, 
+                            discountPercentage: discountPercentage, 
+                            productId: billedProductList[index].productId);
+
+                          context.read<BillingDataController>()
+                          .editSoldUnitOfProduct(
+                            billId: billId, 
+                            handTypedSoldUnit: quantity, 
+                            productId: billedProductList[index].productId, 
+                            billigMethod: billedProductList[index].billingMethod);
+                          Navigator.pop(context);
+                        }));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: _table(context: context, constraints: constraints, billingProduct: billedProductList[index]),
+                  ),
+                ),
               ),
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(6),
-              child: (bill.idMappedBilledProductList.isEmpty) ? 
-              const Center(child: Text('No products selected!'))
-              :
-              ListView.builder(
-                itemCount: billedProductList.length,
-                itemBuilder: (BuildContext context, int index) {  
-                  final billingProduct = billedProductList[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Container(
-                      height: 80,
-                      width: constraints.maxWidth,
-                      decoration: BoxDecoration(
-                        color: index % 2 == 0 ? AppColors().grey() : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8)
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(8),
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context, 
-                              builder:(context) => BillingProductEditPopup(
-                                billId: billId,
-                                billingProduct: billingProduct,
-                                onDone: (quantity, discountPercentage) {
-                                  context.read<BillingDataController>().productDiscount(billId: billId, discountPercentage: discountPercentage, productId: billingProduct.productId);
-                                  context.read<BillingDataController>().editSoldUnitOfProduct(billId: billId, handTypedSoldUnit: quantity, productId: billingProduct.productId, billigMethod: BillingMethod.itemSelect);
-                                  Navigator.pop(context);
-                                }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(3.0),
-                            child: _table(context: context, constraints: constraints, billingProduct: billingProduct),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              )
-            ),
+          ));
+        }
+        return SafeArea(
+          child: (billedProductList.isEmpty) ? 
+          const Center(child: Text('No products selected!'))
+          :
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: widgetList,
           ),
         );
       },
@@ -100,29 +93,59 @@ class BilledProductListWidget extends StatelessWidget {
         TableRow(
           children: [
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 ShowRoundImage(image: context.read<StoreDataController>().imageIfExist(imageId: billingProduct.productImageId), height: 60, width: 60, borderRadius: 5000000,),
-                Padding(
-                  padding: const EdgeInsets.only(left: 2.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(billingProduct.productName, style: AppTextStyle().normalSize(context: context),),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 3.0),
-                        child: Text('Qty. ${billingProduct.quantity}', style: AppTextStyle().greySmallSize(context: context),),
-                      )
-                    ],
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 2.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(child: Text(billingProduct.productName, style: AppTextStyle().normalSize(context: context),)),
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 3.0),
+                            child: Text('Qty. ${billingProduct.quantity}', style: AppTextStyle().greySmallSize(context: context),),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-            Align(alignment: Alignment.topRight, child: Text("${billingProduct.totalPrice.toString()} Tk", style: AppTextStyle().normalSize(context: context),))
+            Align(
+              alignment: Alignment.topRight, 
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Flexible(child: Text("${billingProduct.totalPrice.toString()} Tk", style: AppTextStyle().normalSize(context: context),)),
+                  (billingProduct.discountPercentage <=0) ?
+                  Container()
+                  :
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        "${(billingProduct.totalPrice + (billingProduct.quantity * billingProduct.productPrice) * (billingProduct.discountPercentage / 100)).toString()} Tk", 
+                        style: TextStyle(
+                          color: AppColors().appTextColor(context: context).withOpacity(.3), 
+                          fontSize: AppSizes().normalText, 
+                          fontWeight: FontWeight.bold, 
+                          decoration: TextDecoration.lineThrough, 
+                          decorationColor:  AppColors().appTextColor(context: context).withOpacity(.6),
+                          decorationThickness: 2)),
+                    ),
+                  ),
+                ],
+              ))
           ]
         )
       ],
     );
   }
-
 }

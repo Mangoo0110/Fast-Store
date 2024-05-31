@@ -3,6 +3,7 @@ import 'package:easypos/pages/store/screens/billing/screen/barcode_billing/barco
 import 'package:easypos/pages/store/screens/billing/screen/calculator_billing/calculator_billing_layout.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/select_product_items_widget.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/short_overview_of_bill_widget.dart';
+import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_sizes.dart';
 import 'package:easypos/utils/routing/smooth_page_transition.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class _ItemSelectBillingMobileLayoutState extends State<ItemSelectBillingMobileL
           child: Scaffold(
             appBar: AppBar(
               iconTheme: const IconThemeData(color: Colors.white),
-              backgroundColor: Colors.green.shade400,
+              backgroundColor: AppColors().appActionColor(context: context),
               title: Text('Select Items', style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
               actions: _actionBarOptionList(),
             ),
@@ -49,7 +50,7 @@ class _ItemSelectBillingMobileLayoutState extends State<ItemSelectBillingMobileL
                     ]
                     //color: AppColors().grey(),
                   ),
-                  child: ShortOverviewOfBillWidget(billModel: widget.bill)),
+                  child: ShortOverviewOfBillWidget(billId: widget.bill.billId)),
               ],
             ),
           ),

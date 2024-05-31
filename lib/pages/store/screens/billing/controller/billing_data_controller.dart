@@ -76,12 +76,45 @@ class BillingDataController extends ChangeNotifier {
       existingBill.idMappedBilledProductList[product.productId] = 
       BillingProduct(
         productName: product.productName, 
-        itemBarcode: '',
+        itemBarcode: product.itemBarcode,
         billingMethod: billigMethod,
         productImageId: product.productImageId,
         quantity: quantity, 
         totalPrice: max(0, (quantity * product.productPrice) * (1 - discountPercentage/100)),
         discountPercentage: discountPercentage, 
+        productId: product.productId,
+        pieceProduct: product.pieceProduct, productPrice: product.productPrice,
+      );
+
+      dekhao("existing bill total amount before ${existingBill.payableAmount}");
+      _inStoreBillQueue[billId] = doTheTotalOfBillAfterBillingProduct(bill: existingBill);
+      notifyListeners();
+
+    }else{
+      Fluttertoast.showToast(msg: 'Bill id does not exist!');
+    }
+  }
+
+  addScannedBillingProduct({required String billId, required ProductModel product, required double addingUnit}) {
+    if(_inStoreBillQueue.containsKey(billId)) {
+
+      BillModel existingBill = _inStoreBillQueue[billId]!;
+      double quantity = addingUnit;
+      BillingProduct? beforeEdit;
+      if(existingBill.idMappedBilledProductList.containsKey(product.productId)) {
+        beforeEdit = existingBill.idMappedBilledProductList[product.productId];
+        quantity += existingBill.idMappedBilledProductList[product.productId]!.quantity;
+
+      }
+      existingBill.idMappedBilledProductList[product.productId] = 
+      BillingProduct(
+        productName: product.productName, 
+        itemBarcode: product.itemBarcode,
+        billingMethod: BillingMethod.scan,
+        productImageId: product.productImageId,
+        quantity: quantity, 
+        totalPrice: beforeEdit == null ? (quantity * product.productPrice) : max(0, (quantity * product.productPrice) * (1 - beforeEdit.discountPercentage/100)),
+        discountPercentage: beforeEdit == null ? 0 : beforeEdit.discountPercentage, 
         productId: product.productId,
         pieceProduct: product.pieceProduct, productPrice: product.productPrice,
       );
@@ -111,7 +144,7 @@ class BillingDataController extends ChangeNotifier {
           final afterEditBP = 
           BillingProduct(
             productId: productId,
-            itemBarcode: '',
+            itemBarcode: beforeEditBP.itemBarcode,
             billingMethod: billigMethod,
             productImageId: beforeEditBP.productImageId,
             productName: beforeEditBP.productName, 

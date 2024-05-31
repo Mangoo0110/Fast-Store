@@ -34,7 +34,7 @@ class _CalculatorWidgetState extends State<CalculatorWidget> {
                   
                 }, 
                 controller: _controller, 
-                hintText: 'Type or scan barcode', 
+                hintText: '', 
                 labelText: '', 
                 validationCheck:(text) {
                   
@@ -84,7 +84,9 @@ class _CalculatorWidgetState extends State<CalculatorWidget> {
                           color: Colors.transparent,
                           child: InkWell(
                             onTap: () {
-                              
+                              setState(() {
+                                _controller.text = '${_controller.text}$number';
+                              });
                             },
                             borderRadius: BorderRadius.circular(8),
                             child: Center(
@@ -113,7 +115,9 @@ class _CalculatorWidgetState extends State<CalculatorWidget> {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () {
-                                
+                                setState(() {
+                                  _controller.text = '${_controller.text}0';
+                                });
                               },
                               borderRadius: BorderRadius.circular(8),
                               child: Center(
@@ -141,7 +145,9 @@ class _CalculatorWidgetState extends State<CalculatorWidget> {
                               color: Colors.transparent,
                               child: InkWell(
                                 onTap: () {
-                                  
+                                  setState(() {
+                                    _controller.text = '${_controller.text}.';
+                                  });
                                 },
                                 borderRadius: BorderRadius.circular(8),
                                 child: Center(
@@ -170,7 +176,7 @@ class _CalculatorWidgetState extends State<CalculatorWidget> {
                         height: buttonHeight * 2 - 2,
                         width: buttonWidth - 5,
                         decoration: BoxDecoration(
-                          color: AppColors().appActionColor(context: context),
+                          color: Colors.orange.shade600,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Material(
@@ -198,7 +204,7 @@ class _CalculatorWidgetState extends State<CalculatorWidget> {
                         height: buttonHeight * 2 - 2,
                         width: buttonWidth,
                         decoration: BoxDecoration(
-                          color: Colors.green,
+                          color: AppColors().appActionColor(context: context),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Material(
