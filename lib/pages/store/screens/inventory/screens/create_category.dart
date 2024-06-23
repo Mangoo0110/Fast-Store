@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:easypos/common/widgets/name_textfield.dart';
+import 'package:easypos/common/widgets/textfields/name_textfield.dart';
 import 'package:easypos/data/datasources/firebase/firebase_category_repo_impl.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
-import 'package:easypos/common/widgets/image_show_upload_widget.dart';
+import 'package:easypos/common/widgets/image_related/image_show_upload_widget.dart';
 import 'package:easypos/utils/app_textstyles.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

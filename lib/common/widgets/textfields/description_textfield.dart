@@ -29,7 +29,7 @@ class DescriptionTextfield extends StatelessWidget {
         controller: controller,
         style: AppTextStyle().normalSize(context: context),
         decoration: InputDecoration(
-          floatingLabelBehavior: FloatingLabelBehavior.auto,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
           alignLabelWithHint: false,
           constraints: BoxConstraints(minHeight: constraints.maxHeight),
           hintText: hintText,

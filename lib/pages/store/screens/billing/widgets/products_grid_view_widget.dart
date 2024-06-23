@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:dotted_border/dotted_border.dart';
-import 'package:easypos/common/widgets/show_rect_image.dart';
+import 'package:easypos/common/widgets/image_related/show_rect_image.dart';
+import 'package:easypos/common/widgets/text_widgets.dart';
 import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/models/product_model.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
@@ -10,12 +11,12 @@ import 'package:easypos/pages/store/screens/billing/widgets/billing_product_edit
 import 'package:easypos/utils/app_textstyles.dart';
 import 'package:easypos/utils/dekhao.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class ProductGridViewWiget extends StatefulWidget {
-  final String billId;
   final List<ProductModel> productList;
-  const ProductGridViewWiget({super.key, required this.billId, required this.productList});
+  const ProductGridViewWiget({super.key, required this.productList});
 
   @override
   State<ProductGridViewWiget> createState() => _ProductGridViewWigetState();
@@ -43,10 +44,10 @@ class _ProductGridViewWigetState extends State<ProductGridViewWiget> {
         
             bool thisProductIsSelected = false; 
             double selectedQuantity = 0;
-            if(context.read<BillingDataController>().inStoreBillQueue.containsKey(widget.billId)) {
-              thisProductIsSelected = context.read<BillingDataController>().inStoreBillQueue[widget.billId]!.idMappedBilledProductList.containsKey(thisProduct.productId);
+            if(context.read<BillingDataController>().currentBill != null) {
+              thisProductIsSelected = context.read<BillingDataController>().currentBill!.idMappedBilledProductList.containsKey(thisProduct.productId);
               if(thisProductIsSelected) {
-                selectedQuantity = context.read<BillingDataController>().inStoreBillQueue[widget.billId]!.idMappedBilledProductList[thisProduct.productId]!.quantity;
+                selectedQuantity = context.read<BillingDataController>().currentBill!.idMappedBilledProductList[thisProduct.productId]!.quantity;
               }
             }
             
@@ -63,7 +64,7 @@ class _ProductGridViewWigetState extends State<ProductGridViewWiget> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    context.read<BillingDataController>().addBillingProduct(billId: widget.billId, product: thisProduct, addingUnit: 1, discountPercentage: 0, billigMethod: BillingMethod.itemSelect);
+                    context.read<BillingDataController>().addBillingProduct(product: thisProduct, addingUnit: 1, billigMethod: BillingMethod.itemSelect);
                     setState(() {
                       
                     });
@@ -79,22 +80,21 @@ class _ProductGridViewWigetState extends State<ProductGridViewWiget> {
                       productName: thisProduct.productName, 
                       productPrice: thisProduct.productPrice, 
                       quantity: selectedQuantity, 
-                      totalPrice: 0, pieceProduct: thisProduct.pieceProduct);
+                      totalPrice: 0, pieceProduct: thisProduct.pieceProduct, totalDiscountValue: 0, variantId: thisProduct.productId);
                     if(thisProductIsSelected) {
-                      billingProduct = context.read<BillingDataController>().inStoreBillQueue[widget.billId]!.idMappedBilledProductList[thisProduct.productId]!;
+                      billingProduct = context.read<BillingDataController>().currentBill!.idMappedBilledProductList[thisProduct.productId]!;
                     }
                     showModalBottomSheet(
                       context: context, 
                       builder:(context) => BillingProductEditPopup(
-                        billId: widget.billId,
                         billingProduct: billingProduct,
                         onDone: (quantity, discountPercentage) {
                           dekhao("BillingProductEditPopup ${quantity.toString()}");
                           if(!thisProductIsSelected) {
-                            context.read<BillingDataController>().addBillingProduct(billId: widget.billId, product: thisProduct, addingUnit: 1, discountPercentage: discountPercentage, billigMethod: BillingMethod.itemSelect);
+                            context.read<BillingDataController>().addBillingProduct( product: thisProduct, addingUnit: 1, billigMethod: BillingMethod.itemSelect);
                           }
-                          context.read<BillingDataController>().productDiscount(billId: widget.billId, discountPercentage: discountPercentage, productId: thisProduct.productId);
-                          context.read<BillingDataController>().editSoldUnitOfProduct(billId: widget.billId, handTypedSoldUnit: quantity, productId: billingProduct.productId, billigMethod: BillingMethod.itemSelect);
+                          context.read<BillingDataController>().productDiscount(discountPercentage: discountPercentage, productId: thisProduct.productId);
+                          context.read<BillingDataController>().editSoldUnitOfProduct( handTypedSoldUnit: quantity, productId: billingProduct.productId, billigMethod: BillingMethod.itemSelect);
                           Navigator.pop(context);
                           setState(() {
                             
@@ -128,61 +128,11 @@ class _ProductGridViewWigetState extends State<ProductGridViewWiget> {
                         ],
                       ),
         
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(4),
-                                      border: Border.all(color: Colors.black)
-                                      //color: Colors.white,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 4),
-                                      child: Center(
-                                        child: Text(
-                                          selectedQuantity.toString(), 
-                                          style: AppTextStyle().smallSize(context: context)
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  DottedBorder(
-                                    borderType: BorderType.RRect,
-                                    radius: const Radius.circular(4),
-                                    dashPattern: const [3, 2],
-                                    color: Colors.black,
-                                    strokeWidth: 1,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
-                                        //color: Colors.transparent
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 1),
-                                        child: Center(
-                                          child: Text(
-                                            "${thisProduct.productPrice}", 
-                                            style: AppTextStyle().smallSize(context: context)
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                          child: _priceQuantity(selectedQuantity: selectedQuantity, price: thisProduct.productPrice),
+                        )
                       )
                     ],
                   ),
@@ -192,6 +142,36 @@ class _ProductGridViewWigetState extends State<ProductGridViewWiget> {
           },
         );
       }
+    );
+  }
+
+  Widget _priceQuantity({required double selectedQuantity, required double price}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextWidgets().buttonText(buttonText: 'Price: ', textColor: Colors.grey),
+                TextWidgets().buttonText(buttonText: price.toString(), textColor: Colors.black),
+              ],
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextWidgets().buttonText(buttonText: 'Qty: ', textColor: Colors.grey),
+                    Flexible(child: TextWidgets().buttonText(buttonText: selectedQuantity.toString(), textColor: Colors.black)),
+                  ],
+                ),
+              ),
+            )
+          ],
+        );            
+      },
     );
   }
 }

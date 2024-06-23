@@ -1,5 +1,5 @@
 import 'package:easypos/common/data/app_regexp.dart';
-import 'package:easypos/common/widgets/num_textfield.dart';
+import 'package:easypos/common/widgets/textfields/num_textfield.dart';
 import 'package:easypos/models/product_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';

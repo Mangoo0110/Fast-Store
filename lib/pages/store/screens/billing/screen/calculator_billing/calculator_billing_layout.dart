@@ -4,17 +4,16 @@ import 'package:easypos/pages/store/screens/billing/screen/calculator_billing/la
 import 'package:flutter/material.dart';
 
 class CalculatorBillingLayout extends StatelessWidget {
-  final BillModel bill;
-  const CalculatorBillingLayout({super.key, required this.bill});
+  const CalculatorBillingLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if(constraints.maxWidth <= 600) {
-          return CalculatorBillingMobileLayout(bill: bill);
+          return CalculatorBillingMobileLayout();
         } else {
-          return CalculatorBillingTabletLayout(bill: bill,);
+          return CalculatorBillingTabletLayout();
         }
       },
     );

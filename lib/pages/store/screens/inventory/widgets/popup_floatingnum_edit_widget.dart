@@ -1,5 +1,5 @@
 import 'package:easypos/common/data/app_regexp.dart';
-import 'package:easypos/common/widgets/quantity_textfield.dart';
+import 'package:easypos/common/widgets/textfields/quantity_textfield.dart';
 import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_textstyles.dart';
 import 'package:easypos/utils/dekhao.dart';

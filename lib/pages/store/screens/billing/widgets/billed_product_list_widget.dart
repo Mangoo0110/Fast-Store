@@ -1,9 +1,9 @@
-import 'package:easypos/common/widgets/show_round_image.dart';
+import 'package:easypos/common/widgets/image_related/show_round_image.dart';
 import 'package:easypos/models/bill_model.dart';
 import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
-import 'package:easypos/pages/store/screens/billing/screen/invoice/invoice_layout.dart';
+import 'package:easypos/pages/store/screens/billing/screen/checkout/checkout_layout.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/billing_product_edit_popup.dart';
 import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_sizes.dart';
@@ -15,9 +15,8 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class BilledProductListWidget extends StatelessWidget {
-  final String billId;
   final List<BillingProduct>  billedProductList;
-  const BilledProductListWidget({super.key, required this.billedProductList, required this.billId,});
+  const BilledProductListWidget({super.key, required this.billedProductList});
 
   @override
   Widget build(BuildContext context) {
@@ -43,19 +42,16 @@ class BilledProductListWidget extends StatelessWidget {
                     showModalBottomSheet(
                       context: context, 
                       builder:(context) => BillingProductEditPopup(
-                        billId: billId,
                         billingProduct: billedProductList[index],
                         onDone: (quantity, discountPercentage) {
 
                           context.read<BillingDataController>()
                           .productDiscount(
-                            billId: billId, 
                             discountPercentage: discountPercentage, 
                             productId: billedProductList[index].productId);
 
                           context.read<BillingDataController>()
                           .editSoldUnitOfProduct(
-                            billId: billId, 
                             handTypedSoldUnit: quantity, 
                             productId: billedProductList[index].productId, 
                             billigMethod: billedProductList[index].billingMethod);
@@ -148,4 +144,5 @@ class BilledProductListWidget extends StatelessWidget {
       ],
     );
   }
+
 }

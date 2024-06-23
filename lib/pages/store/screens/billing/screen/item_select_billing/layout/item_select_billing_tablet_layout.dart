@@ -1,15 +1,18 @@
 import 'package:easypos/models/bill_model.dart';
+import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
+import 'package:easypos/pages/store/screens/billing/screen/checkout/checkout_layout.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/billed_product_list_tablet_widget.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/select_product_items_widget.dart';
 import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_sizes.dart';
 import 'package:easypos/utils/app_textstyles.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class ItemSelectBillingTabletLayout extends StatefulWidget {
-  final BillModel bill;
-  const ItemSelectBillingTabletLayout({super.key, required this.bill});
+  const ItemSelectBillingTabletLayout({super.key});
 
   @override
   State<ItemSelectBillingTabletLayout> createState() => _ItemSelectBillingTabletLayoutState();
@@ -22,36 +25,51 @@ class _ItemSelectBillingTabletLayoutState extends State<ItemSelectBillingTabletL
       builder: (context, constraints) {
         return SafeArea(
           child: Scaffold(
-            appBar: AppBar(
-              iconTheme: const IconThemeData(color: Colors.white),
-              backgroundColor: AppColors().appActionColor(context: context),
-              title: Text('Select Items', style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
-              actions: _actionBarOptionList(),
-            ),
             body: Row(
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: Container( 
-                      //height: 200,
-                      width: constraints.maxWidth,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2),
-                        color: Colors.white,
-                        boxShadow: const[
-                          BoxShadow(color: Colors.black, blurRadius: 2)
-                        ]
-                      ),
-                      child: BilledProductListTabletWidget(billId: widget.bill.billId)),
-                  )),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SelectProductItemsWidget(billId: widget.bill.billId))),
+                SizedBox(width: constraints.maxWidth * .4, child: Padding(
+                  padding: const EdgeInsets.only(right: 3.0),
+                  child: _leftSide(),
+                )),
+                SizedBox(width: constraints.maxWidth *.6, child: Padding(
+                  padding: const EdgeInsets.only(left: 3.0),
+                  child: _rightSide(),
+                ))
               ],
             ),
           ),
+        
+        );
+      },
+    );
+  }
+
+  Widget _leftSide() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return const CheckoutLayout();
+      }
+    );
+  }
+
+  Widget _rightSide() {
+    BillModel? currentBill = context.watch<BillingDataController>().currentBill;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if(currentBill == null) {
+          return const Center(child:  CircularProgressIndicator(),);
+        }
+        return Scaffold(
+          appBar: AppBar(
+            iconTheme: const IconThemeData(color: Colors.white),
+            automaticallyImplyLeading: false,
+            backgroundColor: AppColors().billingAccentColor(billType: currentBill.billType),
+            title: Text('Select Items', style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
+            actions: _actionBarOptionList(),
+          ),
+          body: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: SelectProductItemsWidget()),
         );
       },
     );

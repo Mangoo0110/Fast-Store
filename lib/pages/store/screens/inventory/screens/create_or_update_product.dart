@@ -1,18 +1,19 @@
+// ignore_for_file: unnecessary_import
+
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:easypos/common/data/app_regexp.dart';
-import 'package:easypos/common/widgets/description_textfield.dart';
-import 'package:easypos/common/widgets/name_textfield.dart';
-import 'package:easypos/common/widgets/num_textfield.dart';
+import 'package:easypos/common/widgets/buttons/cancel_button_widget.dart';
+import 'package:easypos/common/widgets/text_widgets.dart';
+import 'package:easypos/common/widgets/textfields/description_textfield.dart';
+import 'package:easypos/common/widgets/textfields/name_textfield.dart';
 import 'package:easypos/data/datasources/firebase/firebase_image_repo_impl.dart';
 import 'package:easypos/data/datasources/firebase/firebase_product_repo_impl.dart';
 import 'package:easypos/models/product_model.dart';
 import 'package:easypos/models/store_model.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
-import 'package:easypos/common/widgets/image_show_upload_widget.dart';
+import 'package:easypos/common/widgets/image_related/image_show_upload_widget.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/barcode_show_edit_widget.dart';
-import 'package:easypos/pages/store/screens/inventory/widgets/piece_kilo_switch_widget.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/product_buying_selling_price_widget.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/product_stock_add_subtract.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/select_categories_of_product.dart';
@@ -56,7 +57,7 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
   bool imageChanged = false;
 
   // double
-  double productPrice = 0.0;
+  double productPrice = 0.0, discountPercentage = 0;
 
   //bool
   bool kiloLitreProduct = true, pieceProduct = false;
@@ -113,7 +114,9 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
                 widget.updatingProduct!.quantityMapFrequency == {})
             ? {1: 0}
             : widget.updatingProduct!.quantityMapFrequency,
-        ignoreStockOut: false
+        ignoreStockOut: false, 
+        discountPercentage: discountPercentage,
+        variantList: const []
       );
   }
 
@@ -128,7 +131,7 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
         await FirebaseImageRepoImpl().uploadImage(
             imageBytes: productImage!, imageId: newOrUpdateProduct.productImageId);
       }
-      if(newOrUpdateProduct.props == widget.updatingProduct!.props) {
+      if(widget.updatingProduct != null && newOrUpdateProduct.props == widget.updatingProduct!.props) {
         if (mounted) {
           Navigator.pop(context);
         }
@@ -189,26 +192,17 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
           iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: AppColors().appActionColor(context: context),
           title: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                widget.updatingProduct != null
-                    ? "Update Product "
-                    : "New Product",
-                style: AppTextStyle().appBarTextStyle(context: context),
-              )),
+            alignment: Alignment.centerLeft,
+            child: TextWidgets().titleText(
+              titleText: widget.updatingProduct != null
+                ? "Update Product"
+                : "New Product", 
+              textColor: Colors.white)),
           actions: [
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () {
+            CancelButtonWidget(
+              onCancel: () {
                 Navigator.pop(context);
               },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Cancel',
-                  style: AppTextStyle().greyBoldNormalSize(context: context),
-                ),
-              ),
             ),
             InkWell(
               borderRadius: BorderRadius.circular(8),
@@ -349,6 +343,7 @@ class _CreateOrUpdateProductState extends State<CreateOrUpdateProduct> {
                             selectedCategorySet: selectedCategorySet,
                             onSelect: (newSelectedCategorySet) {
                               selectedCategorySet = newSelectedCategorySet;
+                              editingProduct.productCategoryList = newSelectedCategorySet.toList();
                             },
                           ),
                         ),

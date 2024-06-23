@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 
 class HiveUserRepoImpl extends LocalUserRepo {
 
-  static const String _userRepoKey = 'anikMadeUserInfoKey';
+  static const String _userRepoKey = 'yellowUserInfoKey';//'anikMadeUserInfoKey';
   static const String _userRepoBox = 'user-repo-box';
 
 

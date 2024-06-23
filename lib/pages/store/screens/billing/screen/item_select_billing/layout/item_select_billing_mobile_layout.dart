@@ -1,4 +1,5 @@
 import 'package:easypos/models/bill_model.dart';
+import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
 import 'package:easypos/pages/store/screens/billing/screen/barcode_billing/barcode_billing_layout.dart';
 import 'package:easypos/pages/store/screens/billing/screen/calculator_billing/calculator_billing_layout.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/select_product_items_widget.dart';
@@ -7,10 +8,10 @@ import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_sizes.dart';
 import 'package:easypos/utils/routing/smooth_page_transition.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ItemSelectBillingMobileLayout extends StatefulWidget {
-  final BillModel bill;
-  const ItemSelectBillingMobileLayout({super.key, required this.bill});
+  const ItemSelectBillingMobileLayout({super.key});
 
   @override
   State<ItemSelectBillingMobileLayout> createState() => _ItemSelectBillingMobileLayoutState();
@@ -19,13 +20,14 @@ class ItemSelectBillingMobileLayout extends StatefulWidget {
 class _ItemSelectBillingMobileLayoutState extends State<ItemSelectBillingMobileLayout> {
   @override
   Widget build(BuildContext context) {
+    BillModel? currentBill = context.watch<BillingDataController>().currentBill;
     return LayoutBuilder(
       builder: (context, constraints) {
         return SafeArea(
           child: Scaffold(
             appBar: AppBar(
               iconTheme: const IconThemeData(color: Colors.white),
-              backgroundColor: AppColors().appActionColor(context: context),
+              backgroundColor:  AppColors().billingAccentColor(billType: currentBill!.billType).withOpacity(.9),
               title: Text('Select Items', style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
               actions: _actionBarOptionList(),
             ),
@@ -33,14 +35,14 @@ class _ItemSelectBillingMobileLayoutState extends State<ItemSelectBillingMobileL
               //mainAxisSize: MainAxisSize.max,
               children: [
                 
-                Flexible(
+                const Flexible(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SelectProductItemsWidget(billId: widget.bill.billId,),
+                    padding: EdgeInsets.all(8.0),
+                    child: SelectProductItemsWidget(),
                   ),
                 ),
                 Container( 
-                  height: 120,
+                  height: 75,
                   width: constraints.maxWidth,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(2),
@@ -50,7 +52,7 @@ class _ItemSelectBillingMobileLayoutState extends State<ItemSelectBillingMobileL
                     ]
                     //color: AppColors().grey(),
                   ),
-                  child: ShortOverviewOfBillWidget(billId: widget.bill.billId)),
+                  child: const ShortOverviewOfBillWidget()),
               ],
             ),
           ),
@@ -66,7 +68,7 @@ class _ItemSelectBillingMobileLayoutState extends State<ItemSelectBillingMobileL
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
           onTap: () {
-            Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: BarcodeBillingLayout(bill: widget.bill)));
+            Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: const BarcodeBillingLayout()));
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),
@@ -80,7 +82,7 @@ class _ItemSelectBillingMobileLayoutState extends State<ItemSelectBillingMobileL
           child: InkWell(
             borderRadius: BorderRadius.circular(8),
             onTap: () {
-              Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: CalculatorBillingLayout(bill: widget.bill)));
+              Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: const CalculatorBillingLayout()));
             },
             child: const Padding(
               padding: EdgeInsets.all(8.0),

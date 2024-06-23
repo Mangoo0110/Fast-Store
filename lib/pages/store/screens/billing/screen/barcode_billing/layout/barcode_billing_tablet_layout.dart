@@ -8,8 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class BarcodeBillingTabletLayout extends StatefulWidget {
-  final BillModel bill;
-  const BarcodeBillingTabletLayout({super.key, required this.bill});
+  const BarcodeBillingTabletLayout({super.key});
 
   @override
   State<BarcodeBillingTabletLayout> createState() => _BarcodeBillingTabletLayoutState();
@@ -44,12 +43,12 @@ class _BarcodeBillingTabletLayoutState extends State<BarcodeBillingTabletLayout>
                           BoxShadow(color: Colors.black, blurRadius: 2)
                         ]
                       ),
-                      child: BilledProductListTabletWidget(billId: widget.bill.billId)),
-                  )),
-                Expanded(
+                      child: const BilledProductListTabletWidget(),
+                  ))),
+                const Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SelectProductItemsWidget(billId: widget.bill.billId))),
+                    padding: EdgeInsets.all(8.0),
+                    child: SelectProductItemsWidget())),
               ],
             ),
           ),

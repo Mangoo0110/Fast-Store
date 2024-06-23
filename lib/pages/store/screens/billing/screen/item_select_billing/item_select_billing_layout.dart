@@ -4,17 +4,16 @@ import 'package:easypos/pages/store/screens/billing/screen/item_select_billing/l
 import 'package:flutter/material.dart';
 
 class ItemSelectBillingLayout extends StatelessWidget {
-  final BillModel bill;
-  const ItemSelectBillingLayout({super.key, required this.bill});
+  const ItemSelectBillingLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if(constraints.maxWidth <= 600) {
-          return ItemSelectBillingMobileLayout(bill: bill);
+          return ItemSelectBillingMobileLayout();
         } else {
-          return ItemSelectBillingTabletLayout(bill: bill,);
+          return ItemSelectBillingTabletLayout();
         }
       },
     );

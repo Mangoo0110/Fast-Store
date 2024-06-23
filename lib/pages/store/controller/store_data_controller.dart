@@ -7,16 +7,19 @@ import 'package:easypos/data/datasources/firebase/firebase_product_repo_impl.dar
 import 'package:easypos/data/datasources/local/hive_store_repo_impl.dart';
 import 'package:easypos/models/product_model.dart';
 import 'package:easypos/models/store_model.dart';
+import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
 import 'package:easypos/pages/user_auth/screens/signin.dart';
 import 'package:easypos/utils/dekhao.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class StoreDataController extends ChangeNotifier{
   StoreModel? _currentStore;
   List<ProductModel> _productListOfStore = [];
-  final Map<String, Uint8List?> _idMappedImages = {};
+  Map<String, Uint8List?> _idMappedImages = {};
   Map<String, String> _categoryMapImageIdOfStore = {'All products' : ''};
 
   Map<String, String> get categoryMapImageIdOfStore => _categoryMapImageIdOfStore;
@@ -27,7 +30,16 @@ class StoreDataController extends ChangeNotifier{
 
   StoreModel? get currentStore => _currentStore;
 
+  void emptyfy() {
+    _productListOfStore = [];
+    _idMappedImages = {};
+    _categoryMapImageIdOfStore = {'All products' : ''};
+    _currentStore = null;
+  }
+
   Future<void> init({required BuildContext context}) async{
+    dekhao("Initializing store data");
+    Fluttertoast.showToast(msg: "Initializing store data");
     await getCurrentStore(context: context).then((value) async{
       await fetchCategoriesOfStore();
       await fetchProductListOfStore();
@@ -58,6 +70,8 @@ class StoreDataController extends ChangeNotifier{
     );
     
   }
+
+  
 
 
   Future<void> getImages(Iterator<String> imageIdIterator) async{
@@ -123,9 +137,11 @@ class StoreDataController extends ChangeNotifier{
             Fluttertoast.showToast(msg: "Failed! \n ${dataFailure.message}");
             return _productListOfStore;
           } ,
-          (productListStream) {
-
+          (productListStream) async{
+            dekhao("productListStream products");
             productListStream.listen((List<ProductModel> data) async{
+              dekhao("productListStream products");
+              Fluttertoast.showToast(msg: "${data.length} products");
               _productListOfStore = data;
               _productListOfStore.sort(((a, b) => a.productPrice.compareTo(b.productPrice)));
               _productListOfStore.sort(((a, b) => a.soldFrequency.compareTo(b.soldFrequency)));

@@ -1,3 +1,5 @@
+import 'package:easypos/models/bill_model.dart';
+import 'package:easypos/models/billing_product.dart';
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -79,6 +81,30 @@ class AppColors {
     // bool darkMode = context.watch<ColorModeChoiceProvider>().darkMode;
     // if(darkMode == true) return Colors.white12;
     return Colors.black12;
+  }
+
+  Color billingAccentColor ({
+    required BillType billType
+  }) {
+    if(billType == BillType.inHouse) {
+      return Colors.purple.shade400;
+    } else if(billType == BillType.delivery) {
+      return Colors.blue;
+    } else {
+      return Colors.orange;
+    }
+  }
+
+  Color billTileColor ({
+    required BillType billType
+  }) {
+    if(billType == BillType.inHouse) {
+      return Colors.purple.shade400;
+    } else if(billType == BillType.delivery) {
+      return Color.fromARGB(255, 181, 216, 244);
+    } else {
+      return Color.fromARGB(255, 245, 227, 201);
+    }
   }
 }
 

@@ -120,12 +120,13 @@ class _SelectShowCategoriesWidgetState extends State<SelectShowCategoriesWidget>
       enableFeedback: true,
       underline: Container(),
       //isExpanded: true,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       hint: Text('Categories', style: AppTextStyle().greyBoldNormalSize(context: context),),
       onChanged: (selectedCategory) {
         if(selectedCategory != null) {
           setState(() {
             selectedCategorySet.add(selectedCategory);
+            widget.onSelect(selectedCategorySet);
           });
         }
       },

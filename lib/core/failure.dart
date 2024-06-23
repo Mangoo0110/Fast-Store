@@ -1,4 +1,4 @@
-enum Failure {socketFailure, authFailure, severFailure, firebaseFailure, unknownFailure, noData}
+enum Failure {socketFailure, authFailure, severFailure, firebaseFailure, unknownFailure, outOfMemoryError, noData}
 class DataCRUDFailure {
   final Failure failure;
   final String message;

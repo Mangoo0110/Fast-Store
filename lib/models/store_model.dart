@@ -1,6 +1,7 @@
 import 'package:easypos/data/data_field_names/data_field_names.dart';
-import 'package:easypos/models/utc_datetime_model.dart';
 
+/// before releasing app do remember to change createdAt field from String to timestamp
+/// since firebase supports timestamp datatype
 class StoreModel {
   final String storeId;
   final String parentStoreId;

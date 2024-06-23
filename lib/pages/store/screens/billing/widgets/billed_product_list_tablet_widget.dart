@@ -1,9 +1,9 @@
-import 'package:easypos/common/widgets/show_round_image.dart';
+import 'package:easypos/common/widgets/image_related/show_round_image.dart';
 import 'package:easypos/models/bill_model.dart';
 import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
-import 'package:easypos/pages/store/screens/billing/screen/invoice/invoice_layout.dart';
+import 'package:easypos/pages/store/screens/billing/screen/checkout/checkout_layout.dart';
 import 'package:easypos/pages/store/screens/billing/widgets/billing_product_edit_popup.dart';
 import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_sizes.dart';
@@ -13,15 +13,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BilledProductListTabletWidget extends StatelessWidget {
-  final String billId;
-  const BilledProductListTabletWidget({super.key, required this.billId});
+  const BilledProductListTabletWidget({super.key});
 
 
 
   @override
   Widget build(BuildContext context) {
-    final BillModel bill = context.watch<BillingDataController>().inStoreBillQueue[billId]!;
-    final List<BillingProduct>  billedProductList = bill.idMappedBilledProductList.entries.map((billingProduct) {
+    final BillModel currentBill = context.watch<BillingDataController>().currentBill!;
+    final List<BillingProduct>  billedProductList = currentBill.idMappedBilledProductList.entries.map((billingProduct) {
       return billingProduct.value;
     }).toList();
     return LayoutBuilder(
@@ -36,7 +35,7 @@ class BilledProductListTabletWidget extends StatelessWidget {
                 //height: 150,
                 child: Padding(
                   padding: const EdgeInsets.all(6),
-                  child: (bill.idMappedBilledProductList.isEmpty) ? 
+                  child: (currentBill.idMappedBilledProductList.isEmpty) ? 
                   const Center(child: Text('No products selected!'))
                   :
                   ListView.builder(
@@ -60,11 +59,10 @@ class BilledProductListTabletWidget extends StatelessWidget {
                                 showModalBottomSheet(
                                   context: context, 
                                   builder:(context) => BillingProductEditPopup(
-                                    billId: billId,
                                     billingProduct: billingProduct,
                                     onDone: (quantity, discountPercentage) {
-                                      context.read<BillingDataController>().productDiscount(billId: billId, discountPercentage: discountPercentage, productId: billingProduct.productId);
-                                      context.read<BillingDataController>().editSoldUnitOfProduct(billId: billId, handTypedSoldUnit: quantity, productId: billingProduct.productId, billigMethod: BillingMethod.itemSelect);
+                                      context.read<BillingDataController>().productDiscount( discountPercentage: discountPercentage, productId: billingProduct.productId);
+                                      context.read<BillingDataController>().editSoldUnitOfProduct(handTypedSoldUnit: quantity, productId: billingProduct.productId, billigMethod: BillingMethod.itemSelect);
                                       Navigator.pop(context);
                                     }));
                               },
@@ -91,7 +89,7 @@ class BilledProductListTabletWidget extends StatelessWidget {
                   splashColor: Colors.green,
                   onTap: () {
                     Future.delayed(const Duration(milliseconds: 500)).then((value) {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> InvoiceLayout(bill: bill)));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> const CheckoutLayout()));
                     });
                     
                   },
@@ -101,7 +99,7 @@ class BilledProductListTabletWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Pay', style: TextStyle(color: Colors.white,),),
-                        Text("${bill.payableAmount.toString()} Tk.", style: TextStyle(color: Colors.white, fontSize: AppSizes().extraBig, overflow: TextOverflow.ellipsis),)
+                        Text("${currentBill.payableAmount.toString()} Tk.", style: TextStyle(color: Colors.white, fontSize: AppSizes().extraBig, overflow: TextOverflow.ellipsis),)
                       ],
                     ),
                   ),
@@ -122,35 +120,56 @@ class BilledProductListTabletWidget extends StatelessWidget {
         TableRow(
           children: [
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 ShowRoundImage(image: context.read<StoreDataController>().imageIfExist(imageId: billingProduct.productImageId), height: 60, width: 60, borderRadius: 5000000,),
-                Padding(
-                  padding: const EdgeInsets.only(left: 2.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(billingProduct.productName, style: AppTextStyle().normalSize(context: context),),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 3.0),
-                        child: Text('Qty. ${billingProduct.quantity}', style: AppTextStyle().greySmallSize(context: context),),
-                      )
-                    ],
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 2.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(child: Text(billingProduct.productName, style: AppTextStyle().normalSize(context: context),)),
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 3.0),
+                            child: Text('Qty. ${billingProduct.quantity}', style: AppTextStyle().greySmallSize(context: context),),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-            Align(alignment: Alignment.topRight, child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text("${billingProduct.totalPrice.toString()} Tk", style: AppTextStyle().normalSize(context: context),),
-                const Padding(
-                  padding: EdgeInsets.only(left: 4.0),
-                  child: Icon(Icons.cancel, color: Colors.black,),
-                )
-              ],
-            ))
+            Align(
+              alignment: Alignment.topRight, 
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Flexible(child: Text("${billingProduct.totalPrice.toString()} Tk", style: AppTextStyle().normalSize(context: context),)),
+                  (billingProduct.discountPercentage <=0) ?
+                  Container()
+                  :
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        "${(billingProduct.totalPrice + (billingProduct.quantity * billingProduct.productPrice) * (billingProduct.discountPercentage / 100)).toString()} Tk", 
+                        style: TextStyle(
+                          color: AppColors().appTextColor(context: context).withOpacity(.3), 
+                          fontSize: AppSizes().normalText, 
+                          fontWeight: FontWeight.bold, 
+                          decoration: TextDecoration.lineThrough, 
+                          decorationColor:  AppColors().appTextColor(context: context).withOpacity(.6),
+                          decorationThickness: 2)),
+                    ),
+                  ),
+                ],
+              ))
           ]
         )
       ],

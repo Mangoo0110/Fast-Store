@@ -1,7 +1,7 @@
 import 'package:easypos/common/data/app_regexp.dart';
-import 'package:easypos/common/widgets/name_textfield.dart';
-import 'package:easypos/common/widgets/num_textfield.dart';
-import 'package:easypos/common/widgets/show_round_image.dart';
+import 'package:easypos/common/widgets/textfields/name_textfield.dart';
+import 'package:easypos/common/widgets/textfields/num_textfield.dart';
+import 'package:easypos/common/widgets/image_related/show_round_image.dart';
 import 'package:easypos/models/bill_model.dart';
 import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
@@ -13,15 +13,15 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-class InvoiceCommonLayout extends StatefulWidget {
+class CheckoutCommonLayout extends StatefulWidget {
   final BillModel bill;
-  const InvoiceCommonLayout({super.key, required this.bill});
+  const CheckoutCommonLayout({super.key, required this.bill});
 
   @override
-  State<InvoiceCommonLayout> createState() => _InvoiceCommonLayoutState();
+  State<CheckoutCommonLayout> createState() => _CheckoutCommonLayoutState();
 }
 
-class _InvoiceCommonLayoutState extends State<InvoiceCommonLayout> {
+class _CheckoutCommonLayoutState extends State<CheckoutCommonLayout> {
 
   TextEditingController customerNameController = TextEditingController();
 
@@ -201,8 +201,8 @@ class _InvoiceCommonLayoutState extends State<InvoiceCommonLayout> {
                       if(text == '' && double.tryParse(text)!.isNaN) {
                         setState(() {
                           receivedMoney = double.parse(text);
-                          widget.bill.totalAmountReceived = receivedMoney;
-                          widget.bill.dueAmount = widget.bill.totalAmountReceived - widget.bill.payableAmount;
+                          widget.bill.totalReceivedAmount = receivedMoney;
+                          widget.bill.dueAmount = widget.bill.totalReceivedAmount - widget.bill.payableAmount;
                         });
                       }
                     }, 

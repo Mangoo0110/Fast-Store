@@ -1,15 +1,13 @@
 import 'dart:math';
 
-import 'package:easypos/common/widgets/calculator_textfield.dart';
-import 'package:easypos/common/widgets/name_textfield.dart';
+import 'package:easypos/common/widgets/textfields/calculator_textfield.dart';
 import 'package:easypos/utils/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class CalculatorWidget extends StatefulWidget {
-  final String billId;
-  const CalculatorWidget({super.key, required this.billId});
+  const CalculatorWidget({super.key});
 
   @override
   State<CalculatorWidget> createState() => _CalculatorWidgetState();

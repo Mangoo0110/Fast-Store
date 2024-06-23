@@ -5,11 +5,13 @@ import 'package:easypos/core/failure.dart';
 import 'package:easypos/data/datasources/firebase/firebase_store_repo_impl.dart';
 import 'package:easypos/data/datasources/local/hive_store_repo_impl.dart';
 import 'package:easypos/models/store_model.dart';
+import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/pages/store/screens/main/store_view.dart';
 import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_textstyles.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class StoreList extends StatefulWidget {
   final double contentMaxScreenWidth;
@@ -54,7 +56,9 @@ class _StoreListState extends State<StoreList> {
 
   Future<void> _navigateToStoreAfterCachingLocally({required StoreModel store}) async{
     await HiveStoreRepoImpl().setCurrentStoreInfo(store: store)
-    .then((value) => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const StoreView()), (route) => false))
+    .then((value) async{
+      await context.read<StoreDataController>().init(context: context).then((value) => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const StoreView()), (route) => false));
+    })
     .catchError((err){
       Fluttertoast.showToast(msg: err.toString());
     });

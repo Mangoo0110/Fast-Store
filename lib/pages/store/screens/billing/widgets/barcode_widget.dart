@@ -1,4 +1,4 @@
-import 'package:easypos/common/widgets/name_textfield.dart';
+import 'package:easypos/common/widgets/textfields/name_textfield.dart';
 import 'package:easypos/utils/app_textstyles.dart';
 import 'package:easypos/utils/dekhao.dart';
 import 'package:flutter/cupertino.dart';

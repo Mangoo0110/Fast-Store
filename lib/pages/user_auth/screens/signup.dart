@@ -1,8 +1,8 @@
 
 import 'dart:math';
 
-import 'package:easypos/common/widgets/email_textfield.dart';
-import 'package:easypos/common/widgets/password_textfield.dart';
+import 'package:easypos/common/widgets/textfields/email_textfield.dart';
+import 'package:easypos/common/widgets/textfields/password_textfield.dart';
 import 'package:easypos/core/failure.dart';
 import 'package:easypos/data/datasources/firebase/firebase_auth_repo_impl.dart';
 import 'package:easypos/models/auth_model.dart';

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:easypos/common/widgets/show_round_image.dart';
+import 'package:easypos/common/widgets/image_related/show_round_image.dart';
 import 'package:easypos/common/widgets/spaces.dart';
 import 'package:easypos/data/datasources/firebase/firebase_auth_repo_impl.dart';
 import 'package:easypos/models/user_model.dart';

@@ -40,6 +40,10 @@ const String kkiloLitreProduct = 'kiloLitreProduct';
 const String ksoldFrequency = 'soldFrequency';
 const String kignoreStockOut = 'ignoreStockOut'; 
 const String kdiscountPercentage = 'discountPercentage'; 
+const String ktotalDiscountValue = 'totalDiscountValue'; 
+
+const String kvariantId = 'variantId'; 
+const String kvariantList = 'variantList';
 
 const String kFirestoreCategoryListOfStoreCollection = 'categoryListOfStore'; //"ategoryMoneyQuantity";
 const String kCategoryMap = 'categoryMap';
@@ -58,14 +62,28 @@ const String kidMapbilledProducts = 'idMapbilledProducts';
 const String kpayableAmount = 'payableAmount';
 const String ksubTotal = 'subTotal';
 
-const String kdiscount = 'discount';
-const String ktotalAmountReceived = 'totalAmountReceived';
+const String ktransactionId = 'transactionId';
+const String kpaymentMethod = 'paymentMethod';
+const String kpaidAmount = 'paidAmount';
+const String ktransactionAt = 'transactionAt';
+
+const String kdiscountValue = 'discountValue';
+const String ktotalReceivedAmount = 'totalReceivedAmount'; 
 const String konHouse = 'onHouse';
 const String kbilledAt = 'billedAt';
 const String kdueAmount = 'dueAmount'; 
-const String kdeliveryDateTime = 'deliveryDateTime';
-const String kdeliveryAddress = 'deliveryAddress';
+const String kpaymentList = 'paymentList'; 
+const String kdeliveryCharge = 'deliveryCharge'; 
 const String kquantityMapFrequency = 'quantityMapFrequency';
+const String konlineStatus = 'onlineStatus'; 
+const String kbillingStatus = 'billingStatus';
+///const String konlineStatus = 'onlineStatus';
+
+const String kdeliveryInfo = 'deliveryInfo';
+const String kdeliveryAddress = 'deliveryAddress'; 
+const String kdeliveryPhase = 'deliveryPhase'; 
+const String kdeliveryDateTime = 'deliveryDateTime'; 
+
 
 
 const String kFirestoreTaxesOfStoreCollection = 'taxes';  

@@ -1,0 +1,72 @@
+import 'dart:async';
+
+import 'package:dartz/dartz.dart';
+import 'package:easypos/core/failure.dart';
+import 'package:easypos/core/success.dart';
+import 'package:easypos/data/repos/local/hive_on_hold_bill_repo.dart';
+import 'package:easypos/models/bill_model.dart';
+import 'package:easypos/utils/dekhao.dart';
+import 'package:hive/hive.dart';
+
+class HiveOnHoldBillRepoImpl extends HiveOnHoldBillRepo{  
+
+  final StreamController<List<BillModel>> streamController;
+  final Box<BillModel> box;
+
+  HiveOnHoldBillRepoImpl({required this.streamController, required this.box}) {
+
+    streamController.add(box.values.toList());
+    box.watch().listen((event) {
+      streamController.add(box.values.toList());
+    });
+    
+  }
+
+  dispose() {
+    streamController.close();
+  }
+
+  @override
+  Stream<List<BillModel>> get onHoldBillStream => streamController.stream;
+
+  int get storedBillCount => box.keys.length;
+
+  @override
+  Future<Either<DataCRUDFailure, Success>> addUpdateBill({required BillModel bill}) async {
+    try {
+      
+      if(box.keys.length > 1000) {
+        await deleteBill(billId: box.keys.first);
+      }
+      await box.put(bill.billId, bill);
+      return Right(Success(message: 'Stored locally'));
+
+    } on OutOfMemoryError{
+      return Left(DataCRUDFailure(failure: Failure.outOfMemoryError, message: " Out of storage"));
+    } catch (e) {
+      dekhao("local error");
+      dekhao(e.toString());
+      return Left(DataCRUDFailure(failure: Failure.unknownFailure, message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<DataCRUDFailure, Success>> deleteBill({required String billId}) async {
+    
+    try {
+      return await box.delete(id).then((value) {
+        return Right(Success(message: 'Stored locally'));
+      });
+      
+    } on OutOfMemoryError{
+      return Left(DataCRUDFailure(failure: Failure.outOfMemoryError, message: " Out of storage"));
+    }catch (e) {
+      dekhao("local error");
+      dekhao(e.toString());
+      return Left(DataCRUDFailure(failure: Failure.unknownFailure, message: e.toString()));
+    }
+  }
+
+  
+
+}

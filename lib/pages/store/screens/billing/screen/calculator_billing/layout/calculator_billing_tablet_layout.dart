@@ -11,8 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:easypos/utils/app_sizes.dart';
 
 class CalculatorBillingTabletLayout extends StatefulWidget {
-  final BillModel bill;
-  const CalculatorBillingTabletLayout({super.key, required this.bill});
+  const CalculatorBillingTabletLayout({super.key,});
 
   @override
   State<CalculatorBillingTabletLayout> createState() => _CalculatorBillingTabletLayoutState();
@@ -46,12 +45,12 @@ class _CalculatorBillingTabletLayoutState extends State<CalculatorBillingTabletL
                           BoxShadow(color: Colors.black, blurRadius: 2)
                         ]
                       ),
-                      child: BilledProductListTabletWidget(billId: widget.bill.billId)),
+                      child: const BilledProductListTabletWidget()),
                   )),
-                Expanded(
+                const Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SelectProductItemsWidget(billId: widget.bill.billId))),
+                    padding: EdgeInsets.all(8.0),
+                    child: SelectProductItemsWidget())),
               ],
             ),
           ),
@@ -67,7 +66,7 @@ class _CalculatorBillingTabletLayoutState extends State<CalculatorBillingTabletL
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
           onTap: () {
-            Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: BarcodeBillingLayout(bill: widget.bill)));
+            Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: const BarcodeBillingLayout()));
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),
@@ -81,7 +80,7 @@ class _CalculatorBillingTabletLayoutState extends State<CalculatorBillingTabletL
           child: InkWell(
             borderRadius: BorderRadius.circular(8),
             onTap: () {
-              Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: ItemSelectBillingLayout(bill: widget.bill)));
+              Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: const ItemSelectBillingLayout()));
             },
             child: const Padding(
               padding: EdgeInsets.all(8.0),

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:easypos/common/widgets/show_rect_image.dart';
-import 'package:easypos/common/widgets/upload_image.dart';
+import 'package:easypos/common/widgets/image_related/show_rect_image.dart';
+import 'package:easypos/common/widgets/image_related/upload_image.dart';
 import 'package:flutter/material.dart';
 
 class ImageShowUploadWidget extends StatefulWidget {

@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:easypos/common/data/app_regexp.dart';
-import 'package:easypos/common/widgets/quantity_textfield.dart';
-import 'package:easypos/common/widgets/show_rect_image.dart';
+import 'package:easypos/common/widgets/buttons/done_button_widget.dart';
+import 'package:easypos/common/widgets/textfields/quantity_textfield.dart';
+import 'package:easypos/common/widgets/image_related/show_rect_image.dart';
 import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
@@ -16,10 +17,9 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class BillingProductEditPopup extends StatefulWidget {
-  final String billId;
   final BillingProduct billingProduct;
   final Function (double quantity, double discountPercentage) onDone;
-  const BillingProductEditPopup({super.key, required this.billingProduct, required this.onDone, required this.billId});
+  const BillingProductEditPopup({super.key, required this.billingProduct, required this.onDone});
 
   @override
   State<BillingProductEditPopup> createState() => _BillingProductEditPopupState();
@@ -72,38 +72,11 @@ class _BillingProductEditPopupState extends State<BillingProductEditPopup> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Quantity edit', style: AppTextStyle().boldBigSize(context: context),),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.green.shade300),
-                              boxShadow: const[
-                                BoxShadow(color: Color(0x1F000000), blurRadius: 8)
-                              ]
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(8),
-                                onTap: () {
-                                  widget.onDone(double.tryParse(_quantityInputcontroller.text) ?? 0, double.tryParse(_discountInputcontroller.text) ?? 0,);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.done_all, color: Colors.green,),
-                                      
-                                       Padding(
-                                        padding: EdgeInsets.only(left: 6.0),
-                                        child: Text('Done', style: AppTextStyle().boldNormalSize(context: context),)
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          DoneButtonWidget(
+                            onDone: () {
+                              widget.onDone(double.tryParse(_quantityInputcontroller.text) ?? 0, double.tryParse(_discountInputcontroller.text) ?? 0,);
+                            },
+                          )
                         ],
                       ),
                       Padding(
@@ -135,7 +108,7 @@ class _BillingProductEditPopupState extends State<BillingProductEditPopup> {
                                     onChanged: (value){
                                       dekhao("QuantityTextField $value");
                                       if(value != '' && double.tryParse(value)!.isNaN) {
-                                        context.read<BillingDataController>().editSoldUnitOfProduct(billId: widget.billId, handTypedSoldUnit: double.tryParse(value) ?? widget.billingProduct.quantity, productId: widget.billingProduct.productId, billigMethod: BillingMethod.itemSelect);
+                                        context.read<BillingDataController>().editSoldUnitOfProduct( handTypedSoldUnit: double.tryParse(value) ?? widget.billingProduct.quantity, productId: widget.billingProduct.productId, billigMethod: BillingMethod.itemSelect);
                                       }
                                       
                                     }, 

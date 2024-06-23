@@ -1,6 +1,10 @@
 
 import 'package:easypos/data/datasources/firebase/firebase_auth_repo_impl.dart';
 import 'package:easypos/firebase_options.dart';
+import 'package:easypos/models/bill_model.dart';
+import 'package:easypos/models/billing_product.dart';
+import 'package:easypos/models/delivery_info_model.dart';
+import 'package:easypos/models/payment_model.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/pages/store/screens/appdrawer/controller/appdrawer_controller.dart';
 import 'package:easypos/pages/store/screens/billing/controller/billing_data_controller.dart';
@@ -23,13 +27,25 @@ void main() async{
   );
   final docDir = await getApplicationDocumentsDirectory();
   Hive.init(docDir.path);
+  Hive.registerAdapter(DeliveryPhaseAdapter());
+  Hive.registerAdapter(PaymentMethodAdapter());
+  Hive.registerAdapter(BillingMethodAdapter());
+  Hive.registerAdapter(BillTypeAdapter());
+  Hive.registerAdapter(OnlineStatusAdapter());
+  Hive.registerAdapter(BillingStatusAdapter());
+
+  Hive.registerAdapter(BillModelAdapter());
+  Hive.registerAdapter(DeliveryInfoModelAdapter());
+  Hive.registerAdapter(BillingProductAdapter());
+  Hive.registerAdapter(PaymentModelAdapter());
+
   Animate.restartOnHotReload = true;
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<AppdrawerProviderController>(create: (context)=> AppdrawerProviderController()),
+        ChangeNotifierProvider<AppdrawerProviderController>(create: (context)=> AppdrawerProviderController(), ),
         ChangeNotifierProvider<StoreDataController>(create: (context)=> StoreDataController()),
-        ChangeNotifierProvider<BillingDataController>(create: (context)=> BillingDataController()),
+        ChangeNotifierProvider<BillingDataController>(create: (context)=> BillingDataController(), ),
         ChangeNotifierProvider<UserDataController>(create: (context)=> UserDataController())
       ],
       child: (const MyApp()),

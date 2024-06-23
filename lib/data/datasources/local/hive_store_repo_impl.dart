@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 
 class HiveStoreRepoImpl extends LocalStoreRepo {
 
-  static const String _storeRepoKey = 'anikMadeStoreInfoKey';
+  static const String _storeRepoKey = 'yellowStoreInfoKey';//'anikMadeStoreInfoKey';
   static const String _storeRepoBox = 'store-repo-box';
 
 
@@ -38,7 +38,7 @@ class HiveStoreRepoImpl extends LocalStoreRepo {
     } on FirebaseAuthException catch(e){
       return Left(DataCRUDFailure(failure: Failure.authFailure, message: e.code));
     } catch (e) {
-      dekhao("remote error");
+      dekhao("local error");
       dekhao(e.toString());
       return Left(DataCRUDFailure(failure: Failure.unknownFailure, message: e.toString()));
     }
@@ -65,7 +65,7 @@ class HiveStoreRepoImpl extends LocalStoreRepo {
     } on FirebaseAuthException catch(e){
       return Left(DataCRUDFailure(failure: Failure.authFailure, message: e.code));
     } catch (e) {
-      dekhao("remote error");
+      dekhao("local error");
       dekhao(e.toString());
       return Left(DataCRUDFailure(failure: Failure.unknownFailure, message: e.toString()));
     }
@@ -87,7 +87,7 @@ class HiveStoreRepoImpl extends LocalStoreRepo {
     } on FirebaseAuthException catch(e){
       return Left(DataCRUDFailure(failure: Failure.authFailure, message: e.code));
     } catch (e) {
-      dekhao("remote error");
+      dekhao("local error");
       dekhao(e.toString());
       return Left(DataCRUDFailure(failure: Failure.unknownFailure, message: e.toString()));
     }

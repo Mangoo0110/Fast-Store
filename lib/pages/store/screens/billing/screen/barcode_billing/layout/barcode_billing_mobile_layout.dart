@@ -1,4 +1,4 @@
-import 'package:easypos/common/widgets/show_round_image.dart';
+import 'package:easypos/common/widgets/image_related/show_round_image.dart';
 import 'package:easypos/models/bill_model.dart';
 import 'package:easypos/models/billing_product.dart';
 import 'package:easypos/models/product_model.dart';
@@ -24,8 +24,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class BarcodeBillingMobileLayout extends StatefulWidget {
-  final BillModel bill;
-  const BarcodeBillingMobileLayout({super.key, required this.bill});
+  const BarcodeBillingMobileLayout({super.key,});
 
   @override
   State<BarcodeBillingMobileLayout> createState() => _BarcodeBillingMobileLayoutState();
@@ -56,7 +55,7 @@ class _BarcodeBillingMobileLayoutState extends State<BarcodeBillingMobileLayout>
           child: Scaffold(
             appBar: AppBar(
               iconTheme: const IconThemeData(color: Colors.white),
-              backgroundColor: AppColors().appActionColor(context: context),
+              backgroundColor: Colors.black.withOpacity(.9),
               title: Text('Scan Barcode', style: TextStyle(color: Colors.white, fontSize: AppSizes().normalText, fontWeight: FontWeight.bold),),
               actions: _actionBarOptionList(),
             ),
@@ -78,7 +77,6 @@ class _BarcodeBillingMobileLayoutState extends State<BarcodeBillingMobileLayout>
                       }
                       context.read<BillingDataController>()
                       .addScannedBillingProduct(
-                        billId: widget.bill.billId, 
                         product: barcodeProduct, addingUnit: 1,);
                     },
                   )
@@ -97,7 +95,7 @@ class _BarcodeBillingMobileLayoutState extends State<BarcodeBillingMobileLayout>
                     ]
                     //color: AppColors().grey(),
                   ),
-                  child: ShortOverviewOfBillWidget(billId: widget.bill.billId)),
+                  child: const ShortOverviewOfBillWidget()),
               ],
             ),
           ),
@@ -110,7 +108,7 @@ class _BarcodeBillingMobileLayoutState extends State<BarcodeBillingMobileLayout>
     List<BillingProduct> scannedBillingProducts = [];
     List<GlobalKey> scannedProductsKey = [];
     context.watch<BillingDataController>()
-    .inStoreBillQueue[widget.bill.billId]!
+    .currentBill!
     .idMappedBilledProductList.forEach((key, billingProduct) {
       if(billingProduct.billingMethod == BillingMethod.scan) {
         dekhao(billingProduct.toMap());
@@ -123,7 +121,7 @@ class _BarcodeBillingMobileLayoutState extends State<BarcodeBillingMobileLayout>
         return Padding(
           padding: const EdgeInsets.all(6.0),
           child: BilledProductListWidget(
-            billedProductList: scannedBillingProducts, billId: widget.bill.billId),
+            billedProductList: scannedBillingProducts),
         );
         
       },
@@ -137,7 +135,7 @@ class _BarcodeBillingMobileLayoutState extends State<BarcodeBillingMobileLayout>
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
           onTap: () {
-            Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: CalculatorBillingLayout(bill: widget.bill)));
+            Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: const CalculatorBillingLayout()));
           },
           child: const Padding(
             padding: EdgeInsets.all(8.0),
@@ -151,7 +149,7 @@ class _BarcodeBillingMobileLayoutState extends State<BarcodeBillingMobileLayout>
           child: InkWell(
             borderRadius: BorderRadius.circular(8),
             onTap: () {
-              Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: ItemSelectBillingLayout(bill: widget.bill)));
+              Navigator.of(context).pushReplacement(SmoothPageTransition().createRoute(secondScreen: const ItemSelectBillingLayout()));
             },
             child: const Padding(
               padding: EdgeInsets.all(8.0),

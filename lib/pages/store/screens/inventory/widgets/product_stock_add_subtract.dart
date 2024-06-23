@@ -1,11 +1,7 @@
 import 'package:easypos/models/product_model.dart';
 import 'package:easypos/pages/store/screens/inventory/widgets/piece_kilo_switch_widget.dart';
 import 'package:easypos/utils/app_sizes.dart';
-import 'package:easypos/utils/app_textstyles.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ProductStockAddSubtractWidget extends StatefulWidget {
   final ProductModel product;

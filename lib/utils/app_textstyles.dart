@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:easypos/utils/app_colors.dart';
 import 'package:easypos/utils/app_sizes.dart';
 import 'package:flutter/material.dart';
@@ -59,12 +61,14 @@ class AppTextStyle {
   TextStyle normalSize({
     required BuildContext context
   }) {
-    return TextStyle(color: AppColors().appTextColor(context: context), overflow: TextOverflow.ellipsis, fontSize: AppSizes().normalText);
+    Size size = MediaQuery.sizeOf(context);
+    return TextStyle(color: AppColors().appTextColor(context: context), overflow: TextOverflow.ellipsis, fontSize: min(AppSizes().normalText, size.height * .03));
   }
   TextStyle normalSizeGrey({
     required BuildContext context
   }) {
-    return TextStyle(color: AppColors().appTextColorGrey(context: context), overflow: TextOverflow.ellipsis, fontSize: AppSizes().normalText);
+    Size size = MediaQuery.sizeOf(context);
+    return TextStyle(color: AppColors().appTextColorGrey(context: context), overflow: TextOverflow.ellipsis, fontSize: min(AppSizes().normalText, size.height * .03));
   }
 
   TextStyle boldSmallSize({

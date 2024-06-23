@@ -51,6 +51,9 @@ dependencies:
   equatable: ^2.0.5
   dotted_border: ^2.1.0
   flutter_barcode_scanner: ^2.0.0
+  esc_pos_bluetooth: ^0.4.1
+  connectivity_plus: ^6.0.3
+
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +65,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+  build_runner: ^2.4.9
+  hive_generator: ^1.0.0
+  analyzer: ^4.7.0
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

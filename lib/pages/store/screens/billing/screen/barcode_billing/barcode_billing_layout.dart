@@ -4,17 +4,16 @@ import 'package:easypos/pages/store/screens/billing/screen/barcode_billing/layou
 import 'package:flutter/material.dart';
 
 class BarcodeBillingLayout extends StatelessWidget {
-  final BillModel bill;
-  const BarcodeBillingLayout({super.key, required this.bill});
+  const BarcodeBillingLayout({super.key,});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if(constraints.maxWidth <= 600) {
-          return BarcodeBillingMobileLayout(bill: bill);
+          return BarcodeBillingMobileLayout();
         } else {
-          return BarcodeBillingTabletLayout(bill: bill,);
+          return BarcodeBillingTabletLayout();
         }
       },
     );

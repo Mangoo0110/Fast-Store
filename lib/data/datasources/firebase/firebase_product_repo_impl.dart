@@ -83,13 +83,14 @@ class FirebaseProductRepoImpl extends RemoteProductRepo {
       final Stream<List<ProductModel>> userStoreProductCollectionStream = firestoreAnswer.map((querySnapshot) {
         return querySnapshot.docs
             .map((qsnap) {
-              // dekhao(qsnap.data().toString());
+              //dekhao(qsnap.data().toString());
               ProductModel product = ProductModel.fromMap(map: qsnap.data());
-              // dekhao(product.toMap());
+              dekhao(product.toMap());
               return product;
             })
             .toList();
       });
+      //dekhao("await userStoreProductCollectionStream.length ${await userStoreProductCollectionStream.length}");
       return Right(userStoreProductCollectionStream);
     } on SocketException {
       return Left(DataCRUDFailure(failure: Failure.socketFailure, message: 'Internet connection failed!'));

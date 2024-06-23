@@ -1,5 +1,5 @@
 
-import 'package:easypos/common/widgets/show_rect_image.dart';
+import 'package:easypos/common/widgets/image_related/show_rect_image.dart';
 import 'package:easypos/pages/store/screens/appdrawer/controller/appdrawer_controller.dart';
 import 'package:easypos/utils/app_colors.dart';
 import 'package:flutter/material.dart';

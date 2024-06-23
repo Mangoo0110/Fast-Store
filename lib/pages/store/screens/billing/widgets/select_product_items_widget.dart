@@ -10,8 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class SelectProductItemsWidget extends StatefulWidget {
-  final String billId;
-  const SelectProductItemsWidget({super.key, required this.billId});
+  const SelectProductItemsWidget({super.key});
 
   @override
   State<SelectProductItemsWidget> createState() => _SelectProductItemsWidgetState();
@@ -152,7 +151,7 @@ class _SelectProductItemsWidgetState extends State<SelectProductItemsWidget> {
   }
 
   Widget _categoryProducts({required String categoryName, required List<ProductModel> productList, required BoxConstraints constraints,}) {
-    return ProductGridViewWiget(billId: widget.billId, productList: productList);
+    return ProductGridViewWiget(productList: productList);
   }
 
 }

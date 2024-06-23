@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:easypos/common/widgets/show_rect_image.dart';
+import 'package:easypos/common/widgets/image_related/show_rect_image.dart';
 import 'package:easypos/models/product_model.dart';
 import 'package:easypos/pages/store/controller/store_data_controller.dart';
 import 'package:easypos/pages/store/screens/inventory/controller/inventory_data_controller.dart';
